@@ -22,6 +22,7 @@ import com.marklogic.xqrunner.spi.XQProvider;
 
 import java.util.Map;
 import java.util.HashMap;
+import java.net.URI;
 
 /**
  * <p>Use this class to obtain instances of XQDataSource and XQRunner.
@@ -111,11 +112,30 @@ public class XQFactory
 		return (provider.getName());
 	}
 
-	public XQDataSource newDataSource (String host, int port,
-		String user, String password)
+	public XQDataSource newDataSource (String host, int port, String user, String password)
 		throws XQException
 	{
 		return (provider.newDataSource (host, port, user, password));
+	}
+
+	public XQDataSource newDataSource (URI serverUri)
+		throws XQException
+	{
+		String scheme = serverUri.getScheme();
+		String userInfoStr = serverUri.getUserInfo();
+		String [] userInfo = (userInfoStr == null) ? (new String [0]) : userInfoStr.split (":");
+
+		if ((scheme != null) && (scheme.equals (provider.getName()) == false)) {
+			throw new XQException ("This provider (" + provider.getName() +
+				") does not match URI scheme (" + scheme + ")");
+		}
+
+		if ((userInfo.length != 2) || (userInfo [0].length() == 0) || (userInfo [1].length() == 0)) {
+			throw new XQException ("Expected user:password, found: " + userInfoStr);
+		}
+
+		return (newDataSource (serverUri.getHost(), serverUri.getPort(),
+			userInfo [0], userInfo [1]));
 	}
 
 	public XQDataSource newDataSource (String key, String user, String password)

@@ -1,0 +1,3 @@
+define variable $foovar external
+
+<div id="{$foovar}" snoop="dog">{xdmp:get-current-user()}</div>

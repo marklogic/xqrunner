@@ -20,6 +20,9 @@ package com.marklogic.xqrunner;
 
 import junit.framework.TestCase;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+
 /**
  * Created by IntelliJ IDEA.
  * User: ron
@@ -28,6 +31,21 @@ import junit.framework.TestCase;
  */
 public class TestFactory extends TestCase
 {
+	String host = null;
+	int port = 0;
+	String user = null;
+	String password = null;
+
+	protected void setUp () throws Exception
+	{
+		super.setUp ();
+
+		host = System.getProperty ("xqhost");
+		port = Integer.parseInt (System.getProperty ("xqport"));
+		user = System.getProperty ("xquser");
+		password = System.getProperty ("xqpw");
+	}
+
 	public void testProvider() throws XQException
 	{
 		new XQFactory (XQFactory.XDBC_PROVIDER_NAME);
@@ -70,5 +88,43 @@ public class TestFactory extends TestCase
 		factory = new XQFactory();
 
 		assertEquals (XQFactory.DEFAULT_PROVIDER_NAME, factory.providerName());
+	}
+
+	private void checkBadUri (XQFactory factory, String rawUri) throws URISyntaxException
+	{
+		URI uri = new URI (rawUri);
+
+		try {
+			factory.newDataSource (uri);
+			fail ("Expected execption here");
+		} catch (XQException e) {
+			// expected result
+		}
+
+	}
+
+	public void testURI() throws XQException, URISyntaxException
+	{
+		XQFactory factory = new XQFactory();
+		String scheme = XQFactory.DEFAULT_PROVIDER_NAME;
+
+		checkBadUri (factory, host + ":" + port);
+
+//		checkBadUri (factory, user + "@" + host + ":" + port);
+		checkBadUri (factory, scheme + "://" + user + "@" + host + ":" + port);
+
+//		checkBadUri (factory, ":" + password + "@" + host + ":" + port);
+		checkBadUri (factory, scheme + "://" + ":" + password + "@" + host + ":" + port);
+
+		checkBadUri (factory, "xyzzy://" + ":" + password + "@" + host + ":" + port);
+
+		factory.newDataSource (new URI (scheme + "://" + user + ":" + password + "@" + host + ":" + port));
+
+		String sysProp = XQFactory.PROPERTY_PREFIX + "xyzzy";
+		System.setProperty (sysProp, XQFactory.XDBC_PROVIDER_CLASS);
+
+		factory = new XQFactory ("xyzzy");
+
+		factory.newDataSource (new URI ("xyzzy://" + user + ":" + password + "@" + host + ":" + port));
 	}
 }
