@@ -44,15 +44,8 @@ public class TestResultNullBug extends TestCase
 	{
 		super.setUp ();
 
-		XQFactory factory = new XQFactory();
-
-		String host = System.getProperty ("xqhost");
-		int port = Integer.parseInt (System.getProperty ("xqport"));
-		String user = System.getProperty ("xquser");
-		String password = System.getProperty ("xqpw");
-
-		dataSource = factory.newDataSource (host, port, user, password);
-		runner = dataSource.newSyncRunner();
+		dataSource = TestServerConfig.getDataSource();
+		runner = TestServerConfig.getRunner();
 
 		XQDocumentWrapper doc = GenericDocumentWrapper.newXml (docValue);
 

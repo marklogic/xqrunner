@@ -25,6 +25,7 @@ import com.marklogic.xdbc.XDBCException;
 import com.marklogic.xdbc.XDBCXName;
 import com.marklogic.xdbc.XDBCResultSequence;
 import com.marklogic.xdmp.XDMPDataSource;
+import com.marklogic.xqrunner.TestServerConfig;
 
 import java.io.Reader;
 import java.io.StringWriter;
@@ -44,10 +45,10 @@ public class TestXdbc extends TestCase
 	{
 		super.setUp ();
 
-		String host = System.getProperty ("xqhost");
-		int port = Integer.parseInt (System.getProperty ("xqport"));
-		String user = System.getProperty ("xquser");
-		String password = System.getProperty ("xqpw");
+		String host = TestServerConfig.getHost();
+		int port = TestServerConfig.getPort();
+		String user = TestServerConfig.getUser();
+		String password = TestServerConfig.getPassword();
 
 		XDMPDataSource datasource = new XDMPDataSource (host, port);
 		connection = datasource.getConnection (user, password);
@@ -115,7 +116,7 @@ public class TestXdbc extends TestCase
 		Reader reader = resultSequence.getReader();
 
 		assertNull (reader);
-		
+
 //		assertNotNull (reader);
 //
 //		StringWriter stringWriter = new StringWriter();

@@ -40,10 +40,10 @@ public class TestFactory extends TestCase
 	{
 		super.setUp ();
 
-		host = System.getProperty ("xqhost");
-		port = Integer.parseInt (System.getProperty ("xqport"));
-		user = System.getProperty ("xquser");
-		password = System.getProperty ("xqpw");
+		host = TestServerConfig.getHost();
+		port = TestServerConfig.getPort();
+		user = TestServerConfig.getUser();
+		password = TestServerConfig.getPassword();
 	}
 
 	public void testProvider() throws XQException
