@@ -24,6 +24,8 @@ import com.marklogic.xqrunner.XQProgressListener;
 import com.marklogic.xqrunner.XQResult;
 import com.marklogic.xqrunner.XQRunner;
 import com.marklogic.xqrunner.XQException;
+import com.marklogic.xqrunner.XQDocumentWrapper;
+import com.marklogic.xqrunner.XQDocumentMetaData;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -50,13 +52,17 @@ public class AsyncRunner implements XQAsyncRunner
 
 	public XQResult runQuery (XQuery query) throws XQException
 	{
-		setActiveRunner (syncRunner);
+		return (runTheQuery (query, false));
+	}
 
-		XQResult result = syncRunner.runQuery (query);
+	public XQResult runQueryStreaming (XQuery query) throws XQException
+	{
+		return (runTheQuery (query, true));
+	}
 
-		clearActiveRunner();
-
-		return (result);
+	public void insertDocument (String uri, XQDocumentWrapper documentWrapper, XQDocumentMetaData metaData)
+	{
+		throw new UnsupportedOperationException ("not yet implemented");
 	}
 
 	public synchronized void abortQuery () throws XQException
@@ -70,15 +76,40 @@ public class AsyncRunner implements XQAsyncRunner
 		}
 	}
 
+	private XQResult runTheQuery (XQuery query, boolean streaming) throws XQException
+	{
+		setActiveRunner (syncRunner);
+
+		XQResult result = (streaming) ? syncRunner.runQueryStreaming (query) :  syncRunner.runQuery (query);
+
+		clearActiveRunner();
+
+		return (result);
+	}
+
 	// ---------------------------------------------------------
 	// Implementation of XQAsyncRunner interface
 
-	public synchronized void startQuery (XQuery query)
+	public void startQuery (XQuery query)
+	{
+		startTheQuery (query, false);
+	}
+
+	public void startQueryStreaming (XQuery query)
+	{
+		startTheQuery (query, true);
+	}
+
+	private synchronized void startTheQuery (XQuery query, boolean streaming)
 	{
 		setActiveRunner (new BgRunner (this, syncRunner, query));
 
 		try {
-			activeRunner.runQuery (query);
+			if (streaming) {
+				activeRunner.runQueryStreaming (query);
+			} else {
+				activeRunner.runQuery (query);
+			}
 		} catch (XQException e) {
 			// nothing, won't happen with BgRunner
 		}
@@ -136,27 +167,27 @@ public class AsyncRunner implements XQAsyncRunner
 
 	// -----------------------------------------------------------
 
-	public void notifyStart (XQRunner context)
+	public void notifyStart (XQAsyncRunner context)
 	{
 		notifyListeners (NotifyType.QSTART, context, null, null);
 	}
 
-	public void notifyFinished (XQRunner context, XQResult result)
+	public void notifyFinished (XQAsyncRunner context, XQResult result)
 	{
 		notifyListeners (NotifyType.QDONE, context, result, null);
 	}
 
-	public void notifyAborted (XQRunner context)
+	public void notifyAborted (XQAsyncRunner context)
 	{
 		notifyListeners (NotifyType.QABORT, context, null, null);
 	}
 
-	public void notifyFailed (XQRunner context, Throwable throwable)
+	public void notifyFailed (XQAsyncRunner context, Throwable throwable)
 	{
 		notifyListeners (NotifyType.QFAIL, context, null, throwable);
 	}
 
-	private void notifyListeners (NotifyType which, XQRunner context, XQResult result, Throwable throwable)
+	private void notifyListeners (NotifyType which, XQAsyncRunner context, XQResult result, Throwable throwable)
 	{
 		synchronized (listeners) {
 			for (Iterator it = listeners.keySet().iterator (); it.hasNext ();) {
@@ -205,25 +236,39 @@ public class AsyncRunner implements XQAsyncRunner
 
 	private class BgRunner implements Runnable, XQRunner
 	{
-		private XQRunner context;
+		private XQAsyncRunner context;
 		private XQuery query;
 		private XQRunner runner;
+		private volatile boolean streaming;
 		private volatile boolean queryRunning;
 		private volatile boolean aborted = false;
 
-		public BgRunner (XQRunner context, XQRunner runner, XQuery query)
+		public BgRunner (XQAsyncRunner context, XQRunner runner, XQuery query)
 		{
 			this.context = context;
 			this.query = query;
-
 			this.runner = runner;
 		}
 
 		public XQResult runQuery (XQuery query)
 		{
+			streaming = false;
+
 			new Thread (this).start();
 
 			return (null);
+		}
+
+		public XQResult runQueryStreaming (XQuery query) throws XQException
+		{
+			streaming = true;
+
+			return (runQuery (query));
+		}
+
+		public void insertDocument (String uri, XQDocumentWrapper documentWrapper, XQDocumentMetaData metaData)
+		{
+			throw new UnsupportedOperationException ("not yet implemented");
 		}
 
 		public void abortQuery () throws XQException
@@ -247,7 +292,7 @@ public class AsyncRunner implements XQAsyncRunner
 					queryRunning = true;
 				}
 
-				result = runner.runQuery (query);
+				result = (streaming) ? runner.runQueryStreaming (query) : runner.runQuery (query);
 
 				synchronized (this) {
 					queryRunning = false;
