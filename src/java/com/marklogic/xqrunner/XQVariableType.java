@@ -61,8 +61,8 @@ public class XQVariableType
 	public static final XQVariableType XS_FLOAT = new XQVariableType ("xs:float");
 	public static final XQVariableType XS_DOUBLE = new XQVariableType ("xs:double");
 	public static final XQVariableType XS_DURATION = new XQVariableType ("xs:duration");
-	public static final XQVariableType XS_DAYTIMEDURATION = new XQVariableType ("xdt:dayTimeDuration");
-	public static final XQVariableType XS_YEARMONTHDURATION = new XQVariableType ("xdt:yearMonthDuration");
+	public static final XQVariableType XDT_DAY_TIME_DURATION = new XQVariableType ("xdt:dayTimeDuration");
+	public static final XQVariableType XDT_YEAR_MONTH_DURATION = new XQVariableType ("xdt:yearMonthDuration");
 	public static final XQVariableType XS_DATE_TIME = new XQVariableType ("xs:dateTime");
 	public static final XQVariableType XS_TIME = new XQVariableType ("xs:time");
 	public static final XQVariableType XS_DATE = new XQVariableType ("xs:date");
@@ -75,6 +75,9 @@ public class XQVariableType
 	public static final XQVariableType XS_GYEARMONTH = new XQVariableType ("xs:gYearMonth");
 	public static final XQVariableType XS_HEXBINARY = new XQVariableType ("xs:hexBinary");
 	public static final XQVariableType XS_BASE64BINARY = new XQVariableType ("xs:base64Binary");
+	public static final XQVariableType NODE = new XQVariableType ("node()");
+	public static final XQVariableType TEXT = new XQVariableType ("text()");
+	public static final XQVariableType BINARY = new XQVariableType ("binary()");
 
 	static {
 		Field [] fields = XQVariableType.class.getFields();
