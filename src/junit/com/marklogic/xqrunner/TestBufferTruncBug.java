@@ -97,7 +97,7 @@ public class TestBufferTruncBug extends TestCase
 
 		assertEquals (docText, result.asString());
 
-		runner.runQuery (dataSource.newQuery ("xdmp:document-delete (\"" + DOCURI + "\""));
+		runner.runQuery (dataSource.newQuery ("xdmp:document-delete (\"" + DOCURI + "\")"));
 	}
 
 	public void testDoc() throws XQException
@@ -115,7 +115,7 @@ public class TestBufferTruncBug extends TestCase
 
 		assertEquals (docText, result.asString());
 
-		runner.runQuery (dataSource.newQuery ("xdmp:document-delete (\"" + DOCURI + "\""));
+		runner.runQuery (dataSource.newQuery ("xdmp:document-delete (\"" + DOCURI + "\")"));
 	}
 
 	public void testDocTextLength() throws XQException
@@ -133,7 +133,7 @@ public class TestBufferTruncBug extends TestCase
 
 		assertEquals (docText.length(), result.asString().length());
 
-		runner.runQuery (dataSource.newQuery ("xdmp:document-delete (\"" + DOCURI + "\""));
+		runner.runQuery (dataSource.newQuery ("xdmp:document-delete (\"" + DOCURI + "\")"));
 	}
 
 	private String genText (int size)
