@@ -23,12 +23,15 @@ import com.marklogic.xdbc.XDBCException;
 import com.marklogic.xdbc.XDBCResultSequence;
 import com.marklogic.xdbc.XDBCSchemaTypes;
 import com.marklogic.xdbc.XDBCStatement;
+import com.marklogic.xdbc.XDBCXName;
 import com.marklogic.xqrunner.XQDataSource;
 import com.marklogic.xqrunner.XQException;
 import com.marklogic.xqrunner.XQResult;
 import com.marklogic.xqrunner.XQResultItem;
 import com.marklogic.xqrunner.XQRunner;
 import com.marklogic.xqrunner.XQuery;
+import com.marklogic.xqrunner.XQParameter;
+import com.marklogic.xqrunner.XQParameterType;
 
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
@@ -42,6 +45,9 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Date;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 
 /**
  * XDBC implementation of a synchronous XQRunner.
@@ -66,7 +72,10 @@ public class XdbcSyncRunner implements XQRunner
 		try {
 			connection = (XDBCConnection) datasource.getConnection();
 			statement = connection.createStatement();
-			resultSequence = statement.executeQuery (query.asString());
+
+			setParameters (statement, query);
+
+			resultSequence = statement.executeQuery (query.getBody());
 
 			return (new ResultImpl (resultSequence));
 		} catch (XDBCException e) {
@@ -95,7 +104,83 @@ public class XdbcSyncRunner implements XQRunner
 					// nothing
 				}
 			}
+		}
+	}
 
+	private void setParameters (XDBCStatement statement, XQuery query)
+		throws XDBCException
+	{
+		XQParameter [] params = query.getParameters();
+
+		for (int i = 0; i < params.length; i++) {
+			XQParameter param = params[i];
+			XQParameterType type = param.getType();
+			Object value = param.getValue();
+			String namespace = param.getNamespace();
+			String localname = param.getLocalname();
+//			XDBCXName xName = (namespace == null) ? new XDBCXName (localname) : new XDBCXName (namespace, localname);
+			XDBCXName xName = new XDBCXName ((namespace == null) ? "" : namespace, localname);
+
+			if (type == XQParameterType.XS_STRING) {
+				statement.setString (xName, (String) value);
+
+			} else if (type == XQParameterType.XS_UNTYPED_ATOMIC) {
+				statement.setUntypedAtomic (xName, (String) value);
+
+			} else if (type == XQParameterType.XS_DATE_TIME) {
+				if (value instanceof Date) {
+					statement.setDateTime (xName, (Date) value);
+				} else {
+					statement.setDateTime (xName, (String) value);
+				}
+
+			} else if (type == XQParameterType.XS_DATE) {
+				if (value instanceof Date) {
+					statement.setDate (xName, (Date) value);
+				} else {
+					statement.setDate (xName, (String) value);
+				}
+
+			} else if (type == XQParameterType.XS_TIME) {
+				if (value instanceof Date) {
+					statement.setTime (xName, (Date) value);
+				} else {
+					statement.setTime (xName, (String) value);
+				}
+
+			} else if (type == XQParameterType.XS_DURATION) {
+				throw new UnsupportedOperationException ("FIXME: not yet implemented");
+//				statement.setDuration (xName, null /* FIXME */);
+
+			} else if (type == XQParameterType.XS_DECIMAL) {
+				statement.setDecimal (xName, (BigDecimal) value);
+
+			} else if (type == XQParameterType.XS_INTEGER) {
+				statement.setInteger (xName, (BigInteger) value);
+
+			} else if (type == XQParameterType.XS_BOOLEAN) {
+				statement.setBoolean (xName, ((Boolean) value).booleanValue());
+
+			} else if (type == XQParameterType.XS_DOUBLE) {
+				statement.setDouble (xName, ((BigDecimal) value).doubleValue());
+
+			} else if (type == XQParameterType.XS_FLOAT) {
+				statement.setFloat (xName, ((BigDecimal) value).floatValue());
+
+			} else if (type == XQParameterType.XS_ANY_URI) {
+				statement.setAnyURI (xName, (String) value);
+
+			} else if (type == XQParameterType.NULL) {
+				statement.setNull (xName);
+
+			} else if (type == XQParameterType.XS_QNAME) {
+				statement.setQName (xName, (String) value);
+
+		// TODO: Gregorian types, Base64/Hex binary types
+//statement.set
+			} else {
+				throw new UnsupportedOperationException ("FIXME: implement '" + type + "'");
+			}
 		}
 	}
 

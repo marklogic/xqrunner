@@ -19,6 +19,12 @@
 package com.marklogic.xqrunner.generic;
 
 import com.marklogic.xqrunner.XQuery;
+import com.marklogic.xqrunner.XQParameter;
+import com.marklogic.xqrunner.XQParameterType;
+
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * Created by IntelliJ IDEA.
@@ -29,14 +35,64 @@ import com.marklogic.xqrunner.XQuery;
 public class GenericQuery implements XQuery
 {
 	private String text;
+	private int timeout = -1;
+	private List params = Collections.synchronizedList (new ArrayList());
 
 	public GenericQuery (String text)
 	{
 		this.text = text;
 	}
 
-	public String asString ()
+	public String asString()
 	{
 		return (text);
+	}
+
+	public String getBody()
+	{
+		return (text);
+	}
+
+	public void clearParameters()
+	{
+		params.clear();
+	}
+
+	public void addParameter (XQParameter parameter)
+	{
+		params.add (parameter);
+	}
+
+	public void addParameter (String nameSpace, String localName, XQParameterType type, Object value)
+	{
+		addParameter (new GenericParameter (nameSpace, localName, type, value));
+	}
+
+	public void addParameter (String localName, XQParameterType type, Object value)
+	{
+		addParameter (null, localName, type, value);
+	}
+
+	public XQParameter [] getParameters()
+	{
+		XQParameter [] paramArray;
+
+		synchronized (params) {
+			paramArray = new XQParameter [params.size()];
+
+			params.toArray (paramArray);
+		}
+
+		return (paramArray);
+	}
+
+	public void setTimeout (int seconds)
+	{
+		timeout = seconds;
+	}
+
+	public int getTimeout()
+	{
+		return (timeout);
 	}
 }

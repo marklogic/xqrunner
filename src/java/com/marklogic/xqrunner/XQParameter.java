@@ -19,20 +19,15 @@
 package com.marklogic.xqrunner;
 
 /**
- * Describes a Query to be run.
- * @author Ron Hitchens
+ * Created by IntelliJ IDEA.
+ * User: ron
+ * Date: Sep 30, 2004
+ * Time: 4:09:35 PM
  */
-public interface XQuery
+public interface XQParameter
 {
-	String asString();
-	String getBody();
-
-	void clearParameters();
-	void addParameter (XQParameter parameter);
-	void addParameter (String nameSpace, String localName, XQParameterType type, Object value);
-	void addParameter (String localName, XQParameterType type, Object value);
-	XQParameter [] getParameters();
-
-	void setTimeout (int seconds);
-	int getTimeout();
+	String getNamespace();
+	String getLocalname();
+	XQParameterType getType();
+	Object getValue();
 }
