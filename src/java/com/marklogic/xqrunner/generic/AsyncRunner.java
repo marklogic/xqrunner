@@ -89,25 +89,13 @@ public class AsyncRunner implements XQAsyncRunner
 		startQuery (query);
 	}
 
-	public void awaitQueryCompletion()
+	public synchronized void awaitQueryCompletion()
 	{
-		XQRunner runner = null;
-
-		synchronized (this) {
-			if (activeRunner == null) {
-				return;
-			}
-
-			runner = activeRunner;
-		}
-
-		synchronized (runner) {
-			while (activeRunner != null) {
-				try {
-					runner.wait();
-				} catch (InterruptedException e) {
-					// nothing
-				}
+		while (activeRunner != null) {
+			try {
+				wait();
+			} catch (InterruptedException e) {
+				// nothing
 			}
 		}
 	}
@@ -140,17 +128,9 @@ public class AsyncRunner implements XQAsyncRunner
 
 	private synchronized void clearActiveRunner()
 	{
-		if (activeRunner == null) {
-			return;
-		}
-
-		XQRunner runner = activeRunner;
-
 		activeRunner = null;
 
-		synchronized (runner) {
-			runner.notifyAll();
-		}
+		notifyAll();
 	}
 
 	// -----------------------------------------------------------

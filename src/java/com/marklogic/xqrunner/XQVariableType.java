@@ -38,6 +38,7 @@ public class XQVariableType
 		return (displayName);
 	}
 
+	public static final XQVariableType NULL = new XQVariableType ("--null--");
 	public static final XQVariableType XS_UNTYPED_ATOMIC = new XQVariableType ("xs:untypedAtomic");
 	public static final XQVariableType XS_STRING = new XQVariableType ("xs:string");
 	public static final XQVariableType XS_BOOLEAN = new XQVariableType ("xs:boolean");
@@ -46,11 +47,18 @@ public class XQVariableType
 	public static final XQVariableType XS_FLOAT = new XQVariableType ("xs:float");
 	public static final XQVariableType XS_DOUBLE = new XQVariableType ("xs:double");
 	public static final XQVariableType XS_DURATION = new XQVariableType ("xs:duration");
+	public static final XQVariableType XS_DAYTIMEDURATION = new XQVariableType ("xdt:dayTimeDuration");
+	public static final XQVariableType XS_YEARMONTHDURATION = new XQVariableType ("xdt:yearMonthDuration");
 	public static final XQVariableType XS_DATE_TIME = new XQVariableType ("xs:dateTime");
 	public static final XQVariableType XS_TIME = new XQVariableType ("xs:time");
 	public static final XQVariableType XS_DATE = new XQVariableType ("xs:date");
 	public static final XQVariableType XS_ANY_URI = new XQVariableType ("xs:anyURI");
 	public static final XQVariableType XS_QNAME = new XQVariableType ("xs:QName");
-	public static final XQVariableType NULL = new XQVariableType ("--null--");
-	// TODO: complete this list
+	public static final XQVariableType XS_GDAY = new XQVariableType ("xs:gDay");
+	public static final XQVariableType XS_GMONTH = new XQVariableType ("xs:gMonth");
+	public static final XQVariableType XS_GMONTHDAY = new XQVariableType ("xs:gMonthDay");
+	public static final XQVariableType XS_GYEAR = new XQVariableType ("xs:gYear");
+	public static final XQVariableType XS_GYEARMONTH = new XQVariableType ("xs:gYearMonth");
+	public static final XQVariableType XS_HEXBINARY = new XQVariableType ("xs:hexBinary");
+	public static final XQVariableType XS_BASE64BINARY = new XQVariableType ("xs:base64Binary");
 }

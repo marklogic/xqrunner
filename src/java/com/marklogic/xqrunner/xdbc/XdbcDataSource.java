@@ -23,10 +23,12 @@ import com.marklogic.xqrunner.XQException;
 import com.marklogic.xqrunner.XQuery;
 import com.marklogic.xqrunner.XQVariable;
 import com.marklogic.xqrunner.XQVariableType;
+import com.marklogic.xqrunner.XQDuration;
 import com.marklogic.xqrunner.generic.GenericQuery;
 import com.marklogic.xqrunner.generic.GenericVariable;
 import com.marklogic.xdmp.XDMPDataSource;
 import com.marklogic.xdbc.XDBCException;
+import com.marklogic.xdbc.XDBCDuration;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -134,6 +136,21 @@ public class XdbcDataSource implements XQDataSource
 		return (new GenericVariable (localname, value));
 	}
 
+	public XQDuration newDuration (int years, int months, int days, int hours, int minutes, int seconds, double subseconds)
+	{
+		return newDuration (true, years, months, days, hours, minutes, seconds, subseconds);
+	}
+
+	public XQDuration newDuration (boolean positive, int years, int months, int days, int hours, int minutes, int seconds, double subseconds)
+	{
+		return (new DurationAdapter (positive, years, months, days, hours, minutes, seconds, subseconds));
+	}
+
+	public XQDuration newDuration (String value)
+	{
+		return (new DurationAdapter (value));
+	}
+
 	// ---------------------------------------------------------------
 
 	private XDMPDataSource newDataSource (String host, int port)
@@ -170,5 +187,78 @@ public class XdbcDataSource implements XQDataSource
 		}
 
 		throw new XQException ("Cannot locate JNDI DataSource: " + jndiName);
+	}
+
+	// ---------------------------------------------------------
+
+	static class DurationAdapter implements XQDuration
+	{
+		private final XDBCDuration duration;
+
+		// FIXME: Check XDBC API, what about Days?
+		private DurationAdapter (boolean positive, int years, int months, int days,
+			int hours, int minutes, int seconds, double subseconds)
+		{
+			duration = new XDBCDuration (
+				positive ? XDBCDuration.XDBC_DURATION_POSITIVE : XDBCDuration.XDBC_DURATION_NEGATIVE,
+				years, months, /*days,*/ hours, minutes, seconds, subseconds);
+		}
+
+		private DurationAdapter (String value)
+		{
+			duration = new XDBCDuration (value);
+		}
+
+		XDBCDuration getDuration()
+		{
+			return (new XDBCDuration (duration.getSign(), duration.getYears(),
+				duration.getMonths(), duration.getHours(), duration.getMinutes(),
+				duration.getSeconds(), duration.getSubSeconds()));
+		}
+
+		public boolean isNegative ()
+		{
+			return (duration.getSign() == XDBCDuration.XDBC_DURATION_NEGATIVE);
+		}
+
+		public int getYears ()
+		{
+			return duration.getYears ();
+		}
+
+		public int getMonths ()
+		{
+			return duration.getMonths ();
+		}
+
+		public int getDays ()
+		{
+			return duration.getDays ();
+		}
+
+		public int getHours ()
+		{
+			return duration.getHours ();
+		}
+
+		public int getMinutes ()
+		{
+			return duration.getMinutes ();
+		}
+
+		public int getSeconds ()
+		{
+			return duration.getSeconds ();
+		}
+
+		public double getSubSeconds ()
+		{
+			return duration.getSubSeconds ();
+		}
+
+		public String toString ()
+		{
+			return duration.toString ();
+		}
 	}
 }

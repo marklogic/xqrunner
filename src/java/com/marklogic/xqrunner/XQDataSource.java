@@ -37,4 +37,9 @@ public interface XQDataSource
 	XQVariable newVariable (String localname, XQVariableType type, double value);
 	XQVariable newVariable (String namespace, String localname, boolean value);
 	XQVariable newVariable (String localname, boolean value);
+	XQDuration newDuration (int years, int months, int days,
+		int hours, int minutes, int seconds, double subseconds);
+	XQDuration newDuration (boolean positive, int years, int months, int days,
+		int hours, int minutes, int seconds, double subseconds);
+	XQDuration newDuration (String value);
 }

@@ -46,6 +46,7 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
@@ -153,8 +154,13 @@ public class XdbcSyncRunner implements XQRunner
 				}
 
 			} else if (type == XQVariableType.XS_DURATION) {
-				throw new UnsupportedOperationException ("FIXME: not yet implemented");
-//				statement.setDuration (xName, null /* FIXME */);
+				statement.setDuration (xName, ((XdbcDataSource.DurationAdapter) value).getDuration());
+
+			} else if (type == XQVariableType.XS_DAYTIMEDURATION) {
+				statement.setDayTimeDuration (xName, ((XdbcDataSource.DurationAdapter) value).getDuration());
+
+			} else if (type == XQVariableType.XS_YEARMONTHDURATION) {
+				statement.setYearMonthDuration (xName, ((XdbcDataSource.DurationAdapter) value).getDuration());
 
 			} else if (type == XQVariableType.XS_DECIMAL) {
 				statement.setDecimal (xName, (BigDecimal) value);
@@ -180,7 +186,27 @@ public class XdbcSyncRunner implements XQRunner
 			} else if (type == XQVariableType.XS_QNAME) {
 				statement.setQName (xName, (String) value);
 
-		// TODO: Gregorian types, Base64/Hex binary types
+			} else if (type == XQVariableType.XS_GDAY) {
+				statement.setGDay (xName, (GregorianCalendar) value);
+
+			} else if (type == XQVariableType.XS_GMONTH) {
+				statement.setGMonth (xName, (GregorianCalendar) value);
+
+			} else if (type == XQVariableType.XS_GMONTHDAY) {
+				statement.setGMonthDay (xName, (GregorianCalendar) value);
+
+			} else if (type == XQVariableType.XS_GYEAR) {
+				statement.setGYear (xName, (GregorianCalendar) value);
+
+			} else if (type == XQVariableType.XS_GYEARMONTH) {
+				statement.setGYearMonth (xName, (GregorianCalendar) value);
+
+			} else if (type == XQVariableType.XS_HEXBINARY) {
+				statement.setHexBinary (xName, (String) value);
+
+			} else if (type == XQVariableType.XS_BASE64BINARY) {
+				statement.setBase64Binary (xName, (String) value);
+
 //statement.set
 			} else {
 				throw new UnsupportedOperationException ("FIXME: implement '" + type + "'");

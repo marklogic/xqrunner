@@ -18,13 +18,13 @@
  */
 package com.marklogic.xqrunner.generic;
 
-import com.marklogic.xqrunner.XQuery;
 import com.marklogic.xqrunner.XQVariable;
+import com.marklogic.xqrunner.XQuery;
 
-import java.util.List;
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 
 /**
  * Created by IntelliJ IDEA.
@@ -36,7 +36,7 @@ public class GenericQuery implements XQuery
 {
 	private String text;
 	private int timeout = -1;
-	private List variables = Collections.synchronizedList (new ArrayList());
+	private Set variables = Collections.synchronizedSet (new HashSet());
 
 	public GenericQuery (String text)
 	{
