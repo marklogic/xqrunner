@@ -300,7 +300,9 @@ class XdbcResultItem implements XQResultItem
 		}
 
 		if (type == XQVariableType.XS_BASE64BINARY) {
-			string = xdbcResultSequence.getBase64Binary().asString();
+			string = new String (xdbcResultSequence.getBase64Binary().as_byte_array());
+			// TODO: Below is the preferred API, coming in 2.2-3+
+//			string = xdbcResultSequence.getBase64Binary().asString();
 			object = Base64.decode (string);
 
 			return;
