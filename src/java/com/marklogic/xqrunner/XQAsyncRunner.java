@@ -28,7 +28,6 @@ public interface XQAsyncRunner extends XQRunner
 {
 	void startQuery (XQuery query);
 	void startQuery (XQuery query, XQProgressListener listener, Object attachment);
-	void abortQuery();
 	void registerListener (XQProgressListener listener, Object attachment);
 	void unregisterListener (XQProgressListener listener);
 	void clearListeners();

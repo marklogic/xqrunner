@@ -24,7 +24,6 @@ import com.marklogic.xqrunner.XQProgressListener;
 import com.marklogic.xqrunner.XQResult;
 import com.marklogic.xqrunner.XQRunner;
 import com.marklogic.xqrunner.XQException;
-import com.marklogic.xqrunner.XQDataSource;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -32,34 +31,39 @@ import java.util.Iterator;
 import java.util.Map;
 
 /**
+ * @author Ron Hitchens
  */
 public class AsyncRunner implements XQAsyncRunner
 {
 	private Map listeners = Collections.synchronizedMap (new HashMap());
-	private XQDataSource datasource;
-	private BgRunner runner = null;
+	private XQRunner syncRunner;
+	private XQRunner activeRunner = null;
 
-	public AsyncRunner (XQDataSource datasource)
+	public AsyncRunner (XQRunner syncRunner)
 	{
-		this.datasource = datasource;
+		this.syncRunner = syncRunner;
 	}
 
 	public XQResult runQuery (XQuery query) throws XQException
 	{
-		XQRunner runner = new SyncRunner (datasource);
+		setActiveRunner (syncRunner);
 
-		return (runner.runQuery (query));
+		XQResult result = syncRunner.runQuery (query);
+
+		clearActiveRunner();
+
+		return (result);
 	}
 
 	public synchronized void startQuery (XQuery query)
 	{
-		if (runner != null) {
-			throw new IllegalStateException ("Query is running");
+		setActiveRunner (new BgRunner (this, syncRunner, query));
+
+		try {
+			activeRunner.runQuery (query);
+		} catch (XQException e) {
+			// nothing, won't happen with BgRunner
 		}
-
-		runner = new BgRunner (this, datasource, query);
-
-		new Thread (runner).start();
 	}
 
 	public void startQuery (XQuery query, XQProgressListener listener, Object attachment)
@@ -68,10 +72,15 @@ public class AsyncRunner implements XQAsyncRunner
 		startQuery (query);
 	}
 
-	public void abortQuery ()
+	public synchronized void abortQuery () throws XQException
 	{
-		// FIXME
-		throw new UnsupportedOperationException ("FIXME: abort not done yet");
+		if (activeRunner == null) {
+			activeRunner.abortQuery();
+
+			clearActiveRunner ();
+		} else {
+			throw new IllegalStateException ("No active query");
+		}
 	}
 
 	public void registerListener (XQProgressListener listener, Object attachment)
@@ -87,6 +96,22 @@ public class AsyncRunner implements XQAsyncRunner
 	public void clearListeners()
 	{
 		listeners.clear();
+	}
+
+	// -----------------------------------------------------------
+
+	private synchronized void setActiveRunner (XQRunner runner)
+	{
+		if (activeRunner != null) {
+			throw new IllegalStateException ("Query is already running");
+		}
+
+		activeRunner = runner;
+	}
+
+	private synchronized void clearActiveRunner()
+	{
+		activeRunner = null;
 	}
 
 	// -----------------------------------------------------------
@@ -158,23 +183,35 @@ public class AsyncRunner implements XQAsyncRunner
 
 	// -----------------------------------------------------------
 
-	private synchronized void clearBgState()
-	{
-		runner = null;
-	}
-
-	private class BgRunner implements Runnable
+	private class BgRunner implements Runnable, XQRunner
 	{
 		private XQRunner context;
 		private XQuery query;
 		private XQRunner runner;
+		private volatile boolean queryRunning;
 
-		public BgRunner (XQRunner context, XQDataSource datasource, XQuery query)
+		public BgRunner (XQRunner context, XQRunner runner, XQuery query)
 		{
 			this.context = context;
 			this.query = query;
 
-			runner = new SyncRunner (datasource);
+			this.runner = runner;
+		}
+
+		public XQResult runQuery (XQuery query)
+		{
+			new Thread (this).start();
+
+			return (null);
+		}
+
+		public void abortQuery () throws XQException
+		{
+			synchronized (this) {
+				if (queryRunning) {
+					runner.abortQuery();
+				}
+			}
 		}
 
 		public void run ()
@@ -184,15 +221,24 @@ public class AsyncRunner implements XQAsyncRunner
 			notifyStart (context);
 
 			try {
+				synchronized (this) {
+					queryRunning = true;
+				}
+
 				result = runner.runQuery (query);
+
+				synchronized (this) {
+					queryRunning = false;
+				}
 
 				notifyFinished (context, result);
 			} catch (XQException e) {
+				queryRunning = false;
+
 				notifyFailed (context, e);
 			}
 
-			clearBgState();
+			clearActiveRunner();
 		}
 	}
-
 }

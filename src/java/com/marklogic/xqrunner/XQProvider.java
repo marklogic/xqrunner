@@ -21,11 +21,12 @@ package com.marklogic.xqrunner;
 /**
  * Created by IntelliJ IDEA.
  * User: ron
- * Date: Aug 19, 2004
- * Time: 4:18:41 PM
+ * Date: Sep 29, 2004
+ * Time: 6:21:44 PM
  */
-public interface XQRunner
+public interface XQProvider
 {
-	XQResult runQuery (XQuery query) throws XQException;
-	void abortQuery() throws XQException;
+	XQDataSource newDataSource (String host, int port, String user, String password) throws XQException;
+	XQDataSource newDataSource (String key, String user, String password) throws XQException;
+	XQRunner newSyncRunner (XQDataSource dataSource);
 }

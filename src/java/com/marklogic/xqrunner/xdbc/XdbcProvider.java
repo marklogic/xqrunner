@@ -16,16 +16,35 @@
  * The use of the Apache License does not indicate that this project is
  * affiliated with the Apache Software Foundation.
  */
-package com.marklogic.xqrunner;
+package com.marklogic.xqrunner.xdbc;
+
+import com.marklogic.xqrunner.XQProvider;
+import com.marklogic.xqrunner.XQDataSource;
+import com.marklogic.xqrunner.XQRunner;
+import com.marklogic.xqrunner.XQException;
 
 /**
  * Created by IntelliJ IDEA.
  * User: ron
- * Date: Aug 19, 2004
- * Time: 4:18:41 PM
+ * Date: Sep 29, 2004
+ * Time: 6:40:12 PM
  */
-public interface XQRunner
+public class XdbcProvider implements XQProvider
 {
-	XQResult runQuery (XQuery query) throws XQException;
-	void abortQuery() throws XQException;
+	public XQDataSource newDataSource (String host, int port, String user, String password)
+		throws XQException
+	{
+		return (new XdbcDataSource (host, port, user, password));
+	}
+
+	public XQDataSource newDataSource (String key, String user, String password)
+		throws XQException
+	{
+		return (new XdbcDataSource (key, user, password));
+	}
+
+	public XQRunner newSyncRunner (XQDataSource dataSource)
+	{
+		return (new XdbcSyncRunner (dataSource));
+	}
 }

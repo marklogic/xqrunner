@@ -16,7 +16,7 @@
  * The use of the Apache License does not indicate that this project is
  * affiliated with the Apache Software Foundation.
  */
-package com.marklogic.xqrunner.generic;
+package com.marklogic.xqrunner.xdbc;
 
 import com.marklogic.xdbc.XDBCConnection;
 import com.marklogic.xdbc.XDBCException;
@@ -44,12 +44,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * XDBC implementation of a synchronous XQRunner.
+ * @author Ron Hitchens
  */
-public class SyncRunner implements XQRunner
+public class XdbcSyncRunner implements XQRunner
 {
 	private XQDataSource datasource;
+	private volatile XDBCStatement statement = null;
 
-	public SyncRunner (XQDataSource datasource)
+	public XdbcSyncRunner (XQDataSource datasource)
 	{
 		this.datasource = datasource;
 	}
@@ -58,7 +61,6 @@ public class SyncRunner implements XQRunner
 		throws XQException
 	{
 		XDBCConnection connection = null;
-		XDBCStatement statement = null;
 		XDBCResultSequence resultSequence = null;
 
 		try {
@@ -82,6 +84,8 @@ public class SyncRunner implements XQRunner
 					statement.close();
 				} catch (XDBCException e) {
 					// nothing
+				} finally {
+					statement = null;
 				}
 			}
 			if (connection != null) {
@@ -92,6 +96,20 @@ public class SyncRunner implements XQRunner
 				}
 			}
 
+		}
+	}
+
+	public synchronized void abortQuery()
+		throws XQException
+	{
+		if (statement == null) {
+			throw new IllegalStateException ("No active query");
+		}
+
+		try {
+			statement.cancel ();
+		} catch (XDBCException e) {
+			throw new XQException (e.getMessage(), e);
 		}
 	}
 
