@@ -29,4 +29,12 @@ public interface XQDataSource
 	Object getConnection() throws XQException;
 	Object getConnection (String user, String password) throws XQException;
 	XQuery newQuery (String body);
+	XQVariable newVariable (String namespace, String localname, XQVariableType type, Object value);
+	XQVariable newVariable (String localname, XQVariableType type, Object value);
+	XQVariable newVariable (String namespace, String localname, XQVariableType type, long value);
+	XQVariable newVariable (String localname, XQVariableType type, long value);
+	XQVariable newVariable (String namespace, String localname, XQVariableType type, double value);
+	XQVariable newVariable (String localname, XQVariableType type, double value);
+	XQVariable newVariable (String namespace, String localname, boolean value);
+	XQVariable newVariable (String localname, boolean value);
 }

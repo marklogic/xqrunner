@@ -24,6 +24,8 @@ import com.marklogic.xqrunner.XQException;
 import com.marklogic.xqrunner.XQRunner;
 import com.marklogic.xqrunner.XQuery;
 import com.marklogic.xqrunner.XQResult;
+import com.marklogic.xqrunner.XQVariable;
+import com.marklogic.xqrunner.XQVariableType;
 import com.marklogic.xqrunner.generic.GenericQuery;
 
 
@@ -81,6 +83,46 @@ public class MockProvider implements XQProvider
 		public XQuery newQuery (String body)
 		{
 			return (new GenericQuery (body));
+		}
+
+		public XQVariable newVariable (String namespace, String localname, XQVariableType type, Object value)
+		{
+			return null;  // FIXME: auto-generated
+		}
+
+		public XQVariable newVariable (String localname, XQVariableType type, Object value)
+		{
+			return null;  // FIXME: auto-generated
+		}
+
+		public XQVariable newVariable (String namespace, String localname, XQVariableType type, long value)
+		{
+			return null;  // FIXME: auto-generated
+		}
+
+		public XQVariable newVariable (String localname, XQVariableType type, long value)
+		{
+			return null;  // FIXME: auto-generated
+		}
+
+		public XQVariable newVariable (String namespace, String localname, XQVariableType type, double value)
+		{
+			return null;  // FIXME: auto-generated
+		}
+
+		public XQVariable newVariable (String localname, XQVariableType type, double value)
+		{
+			return null;  // FIXME: auto-generated
+		}
+
+		public XQVariable newVariable (String namespace, String localname, boolean value)
+		{
+			return null;  // FIXME: auto-generated
+		}
+
+		public XQVariable newVariable (String localname, boolean value)
+		{
+			return null;  // FIXME: auto-generated
 		}
 	}
 

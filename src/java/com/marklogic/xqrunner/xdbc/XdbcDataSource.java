@@ -21,7 +21,10 @@ package com.marklogic.xqrunner.xdbc;
 import com.marklogic.xqrunner.XQDataSource;
 import com.marklogic.xqrunner.XQException;
 import com.marklogic.xqrunner.XQuery;
+import com.marklogic.xqrunner.XQVariable;
+import com.marklogic.xqrunner.XQVariableType;
 import com.marklogic.xqrunner.generic.GenericQuery;
+import com.marklogic.xqrunner.generic.GenericVariable;
 import com.marklogic.xdmp.XDMPDataSource;
 import com.marklogic.xdbc.XDBCException;
 
@@ -89,6 +92,46 @@ public class XdbcDataSource implements XQDataSource
 	public XQuery newQuery (String body)
 	{
 		return (new GenericQuery (body));
+	}
+
+	public XQVariable newVariable (String namespace, String localname, XQVariableType type, Object value)
+	{
+		return (new GenericVariable (namespace, localname, type, value));
+	}
+
+	public XQVariable newVariable (String localname, XQVariableType type, Object value)
+	{
+		return (new GenericVariable (localname, type, value));
+	}
+
+	public XQVariable newVariable (String namespace, String localname, XQVariableType type, long value)
+	{
+		return (new GenericVariable (namespace, localname, type, value));
+	}
+
+	public XQVariable newVariable (String localname, XQVariableType type, long value)
+	{
+		return (new GenericVariable (localname, type, value));
+	}
+
+	public XQVariable newVariable (String namespace, String localname, XQVariableType type, double value)
+	{
+		return (new GenericVariable (namespace, localname, type, value));
+	}
+
+	public XQVariable newVariable (String localname, XQVariableType type, double value)
+	{
+		return (new GenericVariable (localname, type, value));
+	}
+
+	public XQVariable newVariable (String namespace, String localname, boolean value)
+	{
+		return (new GenericVariable (namespace, localname, value));
+	}
+
+	public XQVariable newVariable (String localname, boolean value)
+	{
+		return (new GenericVariable (localname, value));
 	}
 
 	// ---------------------------------------------------------------
