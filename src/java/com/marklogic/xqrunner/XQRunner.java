@@ -19,13 +19,22 @@
 package com.marklogic.xqrunner;
 
 /**
- * Created by IntelliJ IDEA.
- * User: ron
- * Date: Aug 19, 2004
- * Time: 4:18:41 PM
+ * The API interface for a synchronous XQuery Runner.
+ * @author Ron Hitchens, Mark Logic Corporation
  */
 public interface XQRunner
 {
+	/**
+	 * Run the given query synchronously and return the result.
+	 * @param query An XQuery instance that will be executed on the server.
+	 * @return An XQResult object containing the buffered result.
+	 * @throws XQException If a problem occurs while processing the query.
+	 */
 	XQResult runQuery (XQuery query) throws XQException;
+
+	/**
+	 * Abort a running query, if possible.
+	 * @throws XQException If there is a problem aborting the query.
+	 */
 	void abortQuery() throws XQException;
 }

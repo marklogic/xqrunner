@@ -37,12 +37,15 @@ public class AsyncRunner implements XQAsyncRunner
 {
 	private Map listeners = Collections.synchronizedMap (new HashMap());
 	private XQRunner syncRunner;
-	private XQRunner activeRunner = null;
+	private volatile XQRunner activeRunner = null;
 
 	public AsyncRunner (XQRunner syncRunner)
 	{
 		this.syncRunner = syncRunner;
 	}
+
+	// ---------------------------------------------------------
+	// Implementation of XQRunner interface
 
 	public XQResult runQuery (XQuery query) throws XQException
 	{
@@ -54,6 +57,20 @@ public class AsyncRunner implements XQAsyncRunner
 
 		return (result);
 	}
+
+	public synchronized void abortQuery () throws XQException
+	{
+		if (activeRunner != null) {
+			activeRunner.abortQuery();
+
+			clearActiveRunner ();
+		} else {
+			throw new IllegalStateException ("No active query");
+		}
+	}
+
+	// ---------------------------------------------------------
+	// Implementation of XQAsyncRunner interface
 
 	public synchronized void startQuery (XQuery query)
 	{
@@ -72,14 +89,26 @@ public class AsyncRunner implements XQAsyncRunner
 		startQuery (query);
 	}
 
-	public synchronized void abortQuery () throws XQException
+	public void awaitQueryCompletion()
 	{
-		if (activeRunner == null) {
-			activeRunner.abortQuery();
+		XQRunner runner = null;
 
-			clearActiveRunner ();
-		} else {
-			throw new IllegalStateException ("No active query");
+		synchronized (this) {
+			if (activeRunner == null) {
+				return;
+			}
+
+			runner = activeRunner;
+		}
+
+		synchronized (runner) {
+			while (activeRunner != null) {
+				try {
+					runner.wait();
+				} catch (InterruptedException e) {
+					// nothing
+				}
+			}
 		}
 	}
 
@@ -111,7 +140,17 @@ public class AsyncRunner implements XQAsyncRunner
 
 	private synchronized void clearActiveRunner()
 	{
+		if (activeRunner == null) {
+			return;
+		}
+
+		XQRunner runner = activeRunner;
+
 		activeRunner = null;
+
+		synchronized (runner) {
+			runner.notifyAll();
+		}
 	}
 
 	// -----------------------------------------------------------
@@ -212,6 +251,8 @@ public class AsyncRunner implements XQAsyncRunner
 					runner.abortQuery();
 				}
 			}
+
+			notifyAborted (context);
 		}
 
 		public void run ()
