@@ -21,10 +21,8 @@ package com.marklogic.xqrunner;
 import java.io.Reader;
 
 /**
- * Created by IntelliJ IDEA.
- * User: ron
- * Date: Aug 19, 2004
- * Time: 4:35:22 PM
+ * One item in a sequence of results.
+ * @author Ron Hitchens
  */
 public interface XQResultItem
 {

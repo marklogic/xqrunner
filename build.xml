@@ -23,7 +23,7 @@
 <project name="xqrunner" default="all" basedir=".">
 
 	<property name="product.name" value="xqrunner"/>
-	<property name="release.version" value="0.5"/>
+	<property name="release.version" value="0.6"/>
 
 	<!-- Static definitions of where things are relative to the root -->
 	<property name="src.root" value="src"/>
@@ -87,6 +87,8 @@
 
 	<path id="testcases.classpath">
 		<pathelement path="${junit.jar}"/>
+		<pathelement path="${xdbc.jar}"/>
+		<pathelement path="${xdmp.jar}"/>
 		<pathelement path="${compiled.classes.dir}"/>
 	</path>
 

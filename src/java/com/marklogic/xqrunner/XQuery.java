@@ -26,8 +26,9 @@ public interface XQuery
 {
 	String getBody();
 
-	void addVariable (XQVariable variable);
+	void setVariable (XQVariable variable);
 	XQVariable [] getVariables();
+	void removeVariable (XQVariable variable);
 	void clearVariables();
 
 	void setTimeout (int seconds);

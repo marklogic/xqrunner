@@ -19,10 +19,8 @@
 package com.marklogic.xqrunner;
 
 /**
- * Created by IntelliJ IDEA.
- * User: ron
- * Date: Aug 19, 2004
- * Time: 4:34:43 PM
+ * Contains a (possibly empty) result sequence.
+ * @author Ron Hitchens
  */
 public interface XQResult
 {
@@ -43,7 +41,19 @@ public interface XQResult
 	 */
 	XQResultItem getItem (int index);
 
+	/**
+	 * @return A String representation of the result sequence by
+	 * concatenating the string representations of each item in
+	 * the sequence.
+	 */
 	String asString();
 
+	/**
+	 * @param separator A String value to be inserted between
+	 * each item in the sequence.
+	 * @return A String representation of the result sequence by
+	 * concatenating the string representations of each item in
+	 * the sequence, with the separator String between each.
+	 */
 	String asString (String separator);
 }

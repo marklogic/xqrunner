@@ -31,6 +31,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 /**
+ * Generic asynchronous query runner framework.
  * @author Ron Hitchens
  */
 public class AsyncRunner implements XQAsyncRunner
@@ -63,7 +64,7 @@ public class AsyncRunner implements XQAsyncRunner
 		if (activeRunner != null) {
 			activeRunner.abortQuery();
 
-			clearActiveRunner ();
+			awaitQueryCompletion();
 		} else {
 			throw new IllegalStateException ("No active query");
 		}
@@ -185,7 +186,7 @@ public class AsyncRunner implements XQAsyncRunner
 	{
 		public static final NotifyType QSTART = new NotifyType ("Start");
 		public static final NotifyType QDONE = new NotifyType ("Finished");
-		public static final NotifyType QABORT = new NotifyType ("Aorted");
+		public static final NotifyType QABORT = new NotifyType ("Aborted");
 		public static final NotifyType QFAIL = new NotifyType ("Failed");
 
 		private String name;
@@ -208,6 +209,7 @@ public class AsyncRunner implements XQAsyncRunner
 		private XQuery query;
 		private XQRunner runner;
 		private volatile boolean queryRunning;
+		private volatile boolean aborted = false;
 
 		public BgRunner (XQRunner context, XQRunner runner, XQuery query)
 		{
@@ -229,10 +231,9 @@ public class AsyncRunner implements XQAsyncRunner
 			synchronized (this) {
 				if (queryRunning) {
 					runner.abortQuery();
+					aborted = true;
 				}
 			}
-
-			notifyAborted (context);
 		}
 
 		public void run ()
@@ -252,7 +253,12 @@ public class AsyncRunner implements XQAsyncRunner
 					queryRunning = false;
 				}
 
-				notifyFinished (context, result);
+				if (aborted) {
+					notifyAborted (context);
+				} else {
+					notifyFinished (context, result);
+				}
+
 			} catch (XQException e) {
 				queryRunning = false;
 

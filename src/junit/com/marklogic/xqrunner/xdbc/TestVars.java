@@ -26,6 +26,7 @@ import com.marklogic.xqrunner.XQResult;
 import com.marklogic.xqrunner.XQException;
 import com.marklogic.xqrunner.XQuery;
 import com.marklogic.xqrunner.XQVariableType;
+import com.marklogic.xqrunner.XQVariable;
 
 import java.util.Date;
 import java.text.DateFormat;
@@ -65,7 +66,7 @@ public class TestVars extends TestCase
 			"define variable $extvar external\n" +
 			"concat (\"var: \", $extvar)");
 
-		query.addVariable (dataSource.newVariable ("extvar", XQVariableType.XS_STRING, "thevalue"));
+		query.setVariable (dataSource.newVariable ("extvar", XQVariableType.XS_STRING, "thevalue"));
 
 		XQResult result = runner.runQuery (query);
 
@@ -78,7 +79,7 @@ public class TestVars extends TestCase
 			"define variable $extvar external\n" +
 			"concat (\"var: \", $extvar)");
 
-		query.addVariable (dataSource.newVariable ("", "extvar", XQVariableType.XS_STRING, "thevalue"));
+		query.setVariable (dataSource.newVariable ("", "extvar", XQVariableType.XS_STRING, "thevalue"));
 
 		XQResult result = runner.runQuery (query);
 
@@ -92,7 +93,7 @@ public class TestVars extends TestCase
 			"define variable $foo:extvar external\n" +
 			"concat (\"var: \", $foo:extvar)");
 
-		query.addVariable (dataSource.newVariable ("foobar", "extvar", XQVariableType.XS_STRING, "thevalue"));
+		query.setVariable (dataSource.newVariable ("foobar", "extvar", XQVariableType.XS_STRING, "thevalue"));
 
 		XQResult result = runner.runQuery (query);
 		assertEquals ("var: thevalue", result.asString ());
@@ -104,7 +105,7 @@ public class TestVars extends TestCase
 			"define variable $extvar external\n" +
 			"concat (\"var: \", xs:string($extvar))");
 
-		query.addVariable (dataSource.newVariable ("extvar", XQVariableType.XS_INTEGER, new BigInteger ("945847567382020387457673828274376477828287364128")));
+		query.setVariable (dataSource.newVariable ("extvar", XQVariableType.XS_INTEGER, new BigInteger ("945847567382020387457673828274376477828287364128")));
 
 		XQResult result = runner.runQuery (query);
 		assertEquals ("var: 945847567382020387457673828274376477828287364128", result.asString ());
@@ -116,7 +117,7 @@ public class TestVars extends TestCase
 			"define variable $extvar external\n" +
 			"concat (\"var: \", xs:string($extvar))");
 
-		query.addVariable (dataSource.newVariable ("extvar", XQVariableType.XS_INTEGER, 945128));
+		query.setVariable (dataSource.newVariable ("extvar", XQVariableType.XS_INTEGER, 945128));
 
 		XQResult result = runner.runQuery (query);
 		assertEquals ("var: 945128", result.asString ());
@@ -128,7 +129,7 @@ public class TestVars extends TestCase
 			"define variable $extvar external\n" +
 			"concat (\"var: \", xs:string($extvar))");
 
-		query.addVariable (dataSource.newVariable (null, "extvar", XQVariableType.XS_INTEGER, 945128));
+		query.setVariable (dataSource.newVariable (null, "extvar", XQVariableType.XS_INTEGER, 945128));
 
 		XQResult result = runner.runQuery (query);
 		assertEquals ("var: 945128", result.asString ());
@@ -140,7 +141,7 @@ public class TestVars extends TestCase
 			"define variable $extvar external\n" +
 			"concat (\"var: \", xs:string($extvar))");
 
-		query.addVariable (dataSource.newVariable ("extvar", XQVariableType.XS_DOUBLE, 837.49));
+		query.setVariable (dataSource.newVariable ("extvar", XQVariableType.XS_DOUBLE, 837.49));
 
 		XQResult result = runner.runQuery (query);
 		assertEquals ("var: 837.49", result.asString ());
@@ -152,7 +153,7 @@ public class TestVars extends TestCase
 			"define variable $extvar external\n" +
 			"concat (\"var: \", xs:string($extvar))");
 
-		query.addVariable (dataSource.newVariable ("extvar", XQVariableType.XS_FLOAT, 837.49));
+		query.setVariable (dataSource.newVariable ("extvar", XQVariableType.XS_FLOAT, 837.49));
 
 		XQResult result = runner.runQuery (query);
 		assertEquals ("var: 837.49", result.asString ());
@@ -164,7 +165,7 @@ public class TestVars extends TestCase
 			"define variable $extvar external\n" +
 			"concat (\"var: \", xs:string($extvar))");
 
-		query.addVariable (dataSource.newVariable ("extvar", XQVariableType.XS_DOUBLE, new BigDecimal (837.49)));
+		query.setVariable (dataSource.newVariable ("extvar", XQVariableType.XS_DOUBLE, new BigDecimal (837.49)));
 
 		XQResult result = runner.runQuery (query);
 		assertEquals ("var: 837.49", result.asString ());
@@ -176,7 +177,7 @@ public class TestVars extends TestCase
 			"define variable $extvar external\n" +
 			"concat (\"var: \", xs:string($extvar))");
 
-		query.addVariable (dataSource.newVariable ("extvar", XQVariableType.XS_DECIMAL, new BigDecimal ("838473564859383847562094857.49765")));
+		query.setVariable (dataSource.newVariable ("extvar", XQVariableType.XS_DECIMAL, new BigDecimal ("838473564859383847562094857.49765")));
 
 		XQResult result = runner.runQuery (query);
 		assertEquals ("var: 838473564859383847562094857.49765", result.asString ());
@@ -188,13 +189,13 @@ public class TestVars extends TestCase
 			"define variable $extvar external\n" +
 			"concat (\"var: \", xs:string($extvar))");
 
-		query.addVariable (dataSource.newVariable ("extvar", true));
+		query.setVariable (dataSource.newVariable ("extvar", true));
 
 		XQResult result = runner.runQuery (query);
 		assertEquals ("var: true", result.asString ());
 
 		query.clearVariables();
-		query.addVariable (dataSource.newVariable ("extvar", false));
+		query.setVariable (dataSource.newVariable ("extvar", false));
 
 		result = runner.runQuery (query);
 		assertEquals ("var: false", result.asString ());
@@ -210,9 +211,42 @@ public class TestVars extends TestCase
 			"define variable $datevar external\n" +
 			"xdmp:strftime (\"%b %d, %Y %I:%M%p\", $datevar)");
 
-		query.addVariable (dataSource.newVariable ("datevar", XQVariableType.XS_DATE_TIME, date));
+		query.setVariable (dataSource.newVariable ("datevar", XQVariableType.XS_DATE_TIME, date));
 
 		XQResult result = runner.runQuery (query);
 		assertEquals (expected, result.asString());
+	}
+
+	public void testRemove()
+	{
+		XQuery query = dataSource.newQuery ("\"Hello World\"");
+		XQVariable variable1 = dataSource.newVariable ("ns", "local", false);
+
+		assertEquals ("No variable set", 0, query.getVariables().length);
+
+		query.setVariable (variable1);
+
+		assertEquals ("One variable set", 1, query.getVariables().length);
+		assertSame ("var 2", variable1, query.getVariables()[0]);
+
+		query.removeVariable (variable1);
+		assertEquals ("No variable set", 0, query.getVariables().length);
+
+	}
+
+	public void testIdentity()
+	{
+		XQuery query = dataSource.newQuery ("\"Hello World\"");
+		XQVariable variable1 = dataSource.newVariable ("ns", "local", false);
+		XQVariable variable2 = dataSource.newVariable ("ns", "local", true);
+
+		assertNotSame (variable1, variable2);
+
+		query.setVariable (variable1);
+		query.setVariable (variable2);
+
+		assertEquals ("One variable set", 1, query.getVariables().length);
+
+		assertSame ("var 2", variable2, query.getVariables()[0]);
 	}
 }

@@ -22,9 +22,9 @@ import com.marklogic.xqrunner.XQVariable;
 import com.marklogic.xqrunner.XQuery;
 
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Set;
+import java.util.Map;
 
 /**
  * Created by IntelliJ IDEA.
@@ -36,7 +36,7 @@ public class GenericQuery implements XQuery
 {
 	private String text;
 	private int timeout = -1;
-	private Set variables = Collections.synchronizedSet (new HashSet());
+	private Map variables = Collections.synchronizedMap (new HashMap());
 
 	public GenericQuery (String text)
 	{
@@ -53,9 +53,14 @@ public class GenericQuery implements XQuery
 		variables.clear();
 	}
 
-	public void addVariable (XQVariable variable)
+	public void setVariable (XQVariable variable)
 	{
-		variables.add (variable);
+		variables.put (hashKey (variable), variable);
+	}
+
+	public void removeVariable (XQVariable variable)
+	{
+		variables.remove (hashKey (variable));
 	}
 
 	public XQVariable [] getVariables()
@@ -65,7 +70,7 @@ public class GenericQuery implements XQuery
 		synchronized (variables) {
 			variableArray = new XQVariable [variables.size()];
 
-			variables.toArray (variableArray);
+			variables.values().toArray (variableArray);
 		}
 
 		return (variableArray);
@@ -89,7 +94,7 @@ public class GenericQuery implements XQuery
 			if (variables.size() > 0) {
 				sb.append ("(: Variables :)\n");
 
-				for (Iterator it = variables.iterator (); it.hasNext ();) {
+				for (Iterator it = variables.values().iterator (); it.hasNext ();) {
 					XQVariable variable = (XQVariable) it.next ();
 
 					sb.append (variable.toString ()).append ("\n");
@@ -102,5 +107,12 @@ public class GenericQuery implements XQuery
 		sb.append (text);
 
 		return (sb.toString());
+	}
+
+	// --------------------------------------------------------------
+
+	private String hashKey (XQVariable variable)
+	{
+		return variable.getNamespace() + ":" + variable.getLocalname();
 	}
 }

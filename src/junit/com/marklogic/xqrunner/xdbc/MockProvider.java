@@ -175,6 +175,7 @@ public class MockProvider implements XQProvider
 
 			aborted = false;
 			throwException = false;
+			run = true;
 			sleeper = Thread.currentThread ();
 
 			while (run && (System.currentTimeMillis() < target)) {

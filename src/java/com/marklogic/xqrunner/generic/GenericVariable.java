@@ -36,13 +36,20 @@ public class GenericVariable implements XQVariable
 	private final String localname;
 	private final XQVariableType type;
 	private final Object value;
+	private final int hashCode;
 
 	public GenericVariable (String namespace, String localname, XQVariableType type, Object value)
 	{
-		this.namespace = namespace;
+		this.namespace = ((namespace == null) || (namespace.length() == 0)) ? "" : namespace;
 		this.localname = localname;
 		this.type = type;
 		this.value = value;
+
+		if (this.namespace.length() == 0) {
+			hashCode = localname.hashCode();
+		} else {
+			hashCode = (this.namespace + ":" + localname).hashCode();
+		}
 	}
 
 	public GenericVariable (String localname, XQVariableType type, Object value)
@@ -102,10 +109,55 @@ public class GenericVariable implements XQVariable
 		return (value);
 	}
 
+	// ---------------------------------------------------------------
+
 	public String toString ()
 	{
-		return (((namespace == null) ? "" : (namespace + ":")) + localname
+		return (((namespace.length() == 0) ? "" : (namespace + ":")) + localname
 			+ ", type=" + type + ", value=" + value + "("
 			+ value.getClass().getName() + ")");
+	}
+
+	public boolean equals (Object obj)
+	{
+		if ( ! (obj instanceof XQVariable)) {
+			return (false);
+		}
+
+		XQVariable other = (XQVariable) obj;
+
+		if ( ! sameName (this, other)) {
+			return (false);
+		}
+
+		if (type != other.getType()) {
+			return (false);
+		}
+
+		return (value.equals (other.getValue()));
+	}
+
+	private boolean sameName (XQVariable var1, XQVariable var2)
+	{
+		return (sameString (var1.getNamespace(), var2.getNamespace()) &&
+			sameString (var2.getLocalname(), var2.getLocalname()));
+	}
+
+	private boolean sameString (String s1, String s2)
+	{
+		if (s1 == s2) {
+			return (true);
+		}
+
+		if ((s1 == null) || (s2 == null)) {
+			return (false);
+		}
+
+		return (s1.equals (s2));
+	}
+
+	public int hashCode ()
+	{
+		return (hashCode);
 	}
 }
