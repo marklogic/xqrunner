@@ -18,4 +18,11 @@ Version 0.6.0
 	Javadoc comments not finished yet.
 	Need some good examples
 
-Rh 10/14/2004
+Version 0.7.0
+	Added external variables (parameters) on queries
+	Streaming mode for large results
+	Document insert
+	More junit tests
+	Misc fixes and robustitude
+
+Rh 11/12/2004
