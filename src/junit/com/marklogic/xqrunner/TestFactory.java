@@ -42,7 +42,9 @@ public class TestFactory extends TestCase
 		String sysProp = XQFactory.PROPERTY_PREFIX + "xyzzy";
 		System.setProperty (sysProp, XQFactory.XDBC_PROVIDER_CLASS);
 
-		new XQFactory ("xyzzy");
+		XQFactory factory = new XQFactory ("xyzzy");
+
+		assertEquals ("xyzzy", factory.providerName());
 
 		try {
 			new XQFactory ("dgfhdghdfgh");
@@ -54,7 +56,9 @@ public class TestFactory extends TestCase
 
 		System.getProperties().remove (sysProp);
 
-		new XQFactory (XQFactory.XDBC_PROVIDER_NAME);
+		factory = new XQFactory (XQFactory.XDBC_PROVIDER_NAME);
+
+		assertEquals (XQFactory.XDBC_PROVIDER_NAME, factory.providerName());
 
 		try {
 			new XQFactory ("xyzzy");
@@ -62,5 +66,9 @@ public class TestFactory extends TestCase
 		} catch (UnsupportedOperationException e) {
 			// expected result
 		}
+
+		factory = new XQFactory();
+
+		assertEquals (XQFactory.DEFAULT_PROVIDER_NAME, factory.providerName());
 	}
 }

@@ -24,10 +24,10 @@ package com.marklogic.xqrunner;
  * Date: Sep 30, 2004
  * Time: 4:09:35 PM
  */
-public interface XQParameter
+public interface XQVariable
 {
 	String getNamespace();
 	String getLocalname();
-	XQParameterType getType();
+	XQVariableType getType();
 	Object getValue();
 }

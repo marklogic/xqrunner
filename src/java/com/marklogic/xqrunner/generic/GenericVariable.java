@@ -18,8 +18,8 @@
  */
 package com.marklogic.xqrunner.generic;
 
-import com.marklogic.xqrunner.XQParameter;
-import com.marklogic.xqrunner.XQParameterType;
+import com.marklogic.xqrunner.XQVariable;
+import com.marklogic.xqrunner.XQVariableType;
 
 import java.math.BigInteger;
 import java.math.BigDecimal;
@@ -30,14 +30,14 @@ import java.math.BigDecimal;
  * Date: Sep 30, 2004
  * Time: 4:32:41 PM
  */
-public class GenericParameter implements XQParameter
+public class GenericVariable implements XQVariable
 {
 	private final String namespace;
 	private final String localname;
-	private final XQParameterType type;
+	private final XQVariableType type;
 	private final Object value;
 
-	public GenericParameter (String namespace, String localname, XQParameterType type, Object value)
+	public GenericVariable (String namespace, String localname, XQVariableType type, Object value)
 	{
 		this.namespace = namespace;
 		this.localname = localname;
@@ -45,15 +45,42 @@ public class GenericParameter implements XQParameter
 		this.value = value;
 	}
 
-	public GenericParameter (String namespace, String localname, XQParameterType type, long value)
+	public GenericVariable (String localname, XQVariableType type, Object value)
+	{
+		this (null, localname, type, value);
+	}
+
+	public GenericVariable (String namespace, String localname, XQVariableType type, long value)
 	{
 		this (namespace, localname, type, new BigInteger ("" + value));
 	}
 
-	public GenericParameter (String namespace, String localname, XQParameterType type, double value)
+	public GenericVariable (String localname, XQVariableType type, long value)
+	{
+		this (null, localname, type, new BigInteger ("" + value));
+	}
+
+	public GenericVariable (String namespace, String localname, XQVariableType type, double value)
 	{
 		this (namespace, localname, type, new BigDecimal (value));
 	}
+
+	public GenericVariable (String localname, XQVariableType type, double value)
+	{
+		this (null, localname, type, new BigDecimal (value));
+	}
+
+	public GenericVariable (String namespace, String localname, boolean value)
+	{
+		this (namespace, localname, XQVariableType.XS_BOOLEAN, Boolean.valueOf (value));
+	}
+
+	public GenericVariable (String localname, boolean value)
+	{
+		this (null, localname, XQVariableType.XS_BOOLEAN, Boolean.valueOf (value));
+	}
+
+	// ---------------------------------------------------------------
 
 	public String getNamespace ()
 	{
@@ -65,7 +92,7 @@ public class GenericParameter implements XQParameter
 		return (localname);
 	}
 
-	public XQParameterType getType ()
+	public XQVariableType getType ()
 	{
 		return (type);
 	}

@@ -31,6 +31,20 @@ import com.marklogic.xqrunner.spi.XQProvider;
  */
 public class XdbcProvider implements XQProvider
 {
+	public static final String NAME = "xdbc";
+
+	private String name = NAME;
+
+	public void setName (String name)
+	{
+		this.name = name;
+	}
+
+	public String getName ()
+	{
+		return (name);
+	}
+
 	public XQDataSource newDataSource (String host, int port, String user, String password)
 		throws XQException
 	{

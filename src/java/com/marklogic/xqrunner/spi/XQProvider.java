@@ -30,6 +30,8 @@ import com.marklogic.xqrunner.XQRunner;
  */
 public interface XQProvider
 {
+	void setName (String name);
+	String getName();
 	XQDataSource newDataSource (String host, int port, String user, String password) throws XQException;
 	XQDataSource newDataSource (String key, String user, String password) throws XQException;
 	XQRunner newSyncRunner (XQDataSource dataSource);

@@ -24,14 +24,11 @@ package com.marklogic.xqrunner;
  */
 public interface XQuery
 {
-	String asString();
 	String getBody();
 
-	void clearParameters();
-	void addParameter (XQParameter parameter);
-	void addParameter (String nameSpace, String localName, XQParameterType type, Object value);
-	void addParameter (String localName, XQParameterType type, Object value);
-	XQParameter [] getParameters();
+	void addVariable (XQVariable variable);
+	XQVariable [] getVariables();
+	void clearVariables();
 
 	void setTimeout (int seconds);
 	int getTimeout();

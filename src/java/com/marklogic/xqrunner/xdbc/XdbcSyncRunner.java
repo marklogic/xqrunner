@@ -30,8 +30,8 @@ import com.marklogic.xqrunner.XQResult;
 import com.marklogic.xqrunner.XQResultItem;
 import com.marklogic.xqrunner.XQRunner;
 import com.marklogic.xqrunner.XQuery;
-import com.marklogic.xqrunner.XQParameter;
-import com.marklogic.xqrunner.XQParameterType;
+import com.marklogic.xqrunner.XQVariable;
+import com.marklogic.xqrunner.XQVariableType;
 
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
@@ -73,6 +73,10 @@ public class XdbcSyncRunner implements XQRunner
 			connection = (XDBCConnection) datasource.getConnection();
 			statement = connection.createStatement();
 
+			if (query.getTimeout() != -1) {
+				statement.setQueryTimeout (query.getTimeout());
+			}
+
 			setParameters (statement, query);
 
 			resultSequence = statement.executeQuery (query.getBody());
@@ -110,70 +114,70 @@ public class XdbcSyncRunner implements XQRunner
 	private void setParameters (XDBCStatement statement, XQuery query)
 		throws XDBCException
 	{
-		XQParameter [] params = query.getParameters();
+		XQVariable [] params = query.getVariables();
 
 		for (int i = 0; i < params.length; i++) {
-			XQParameter param = params[i];
-			XQParameterType type = param.getType();
+			XQVariable param = params[i];
+			XQVariableType type = param.getType();
 			Object value = param.getValue();
 			String namespace = param.getNamespace();
 			String localname = param.getLocalname();
 //			XDBCXName xName = (namespace == null) ? new XDBCXName (localname) : new XDBCXName (namespace, localname);
 			XDBCXName xName = new XDBCXName ((namespace == null) ? "" : namespace, localname);
 
-			if (type == XQParameterType.XS_STRING) {
+			if (type == XQVariableType.XS_STRING) {
 				statement.setString (xName, (String) value);
 
-			} else if (type == XQParameterType.XS_UNTYPED_ATOMIC) {
+			} else if (type == XQVariableType.XS_UNTYPED_ATOMIC) {
 				statement.setUntypedAtomic (xName, (String) value);
 
-			} else if (type == XQParameterType.XS_DATE_TIME) {
+			} else if (type == XQVariableType.XS_DATE_TIME) {
 				if (value instanceof Date) {
 					statement.setDateTime (xName, (Date) value);
 				} else {
 					statement.setDateTime (xName, (String) value);
 				}
 
-			} else if (type == XQParameterType.XS_DATE) {
+			} else if (type == XQVariableType.XS_DATE) {
 				if (value instanceof Date) {
 					statement.setDate (xName, (Date) value);
 				} else {
 					statement.setDate (xName, (String) value);
 				}
 
-			} else if (type == XQParameterType.XS_TIME) {
+			} else if (type == XQVariableType.XS_TIME) {
 				if (value instanceof Date) {
 					statement.setTime (xName, (Date) value);
 				} else {
 					statement.setTime (xName, (String) value);
 				}
 
-			} else if (type == XQParameterType.XS_DURATION) {
+			} else if (type == XQVariableType.XS_DURATION) {
 				throw new UnsupportedOperationException ("FIXME: not yet implemented");
 //				statement.setDuration (xName, null /* FIXME */);
 
-			} else if (type == XQParameterType.XS_DECIMAL) {
+			} else if (type == XQVariableType.XS_DECIMAL) {
 				statement.setDecimal (xName, (BigDecimal) value);
 
-			} else if (type == XQParameterType.XS_INTEGER) {
+			} else if (type == XQVariableType.XS_INTEGER) {
 				statement.setInteger (xName, (BigInteger) value);
 
-			} else if (type == XQParameterType.XS_BOOLEAN) {
+			} else if (type == XQVariableType.XS_BOOLEAN) {
 				statement.setBoolean (xName, ((Boolean) value).booleanValue());
 
-			} else if (type == XQParameterType.XS_DOUBLE) {
+			} else if (type == XQVariableType.XS_DOUBLE) {
 				statement.setDouble (xName, ((BigDecimal) value).doubleValue());
 
-			} else if (type == XQParameterType.XS_FLOAT) {
+			} else if (type == XQVariableType.XS_FLOAT) {
 				statement.setFloat (xName, ((BigDecimal) value).floatValue());
 
-			} else if (type == XQParameterType.XS_ANY_URI) {
+			} else if (type == XQVariableType.XS_ANY_URI) {
 				statement.setAnyURI (xName, (String) value);
 
-			} else if (type == XQParameterType.NULL) {
+			} else if (type == XQVariableType.NULL) {
 				statement.setNull (xName);
 
-			} else if (type == XQParameterType.XS_QNAME) {
+			} else if (type == XQVariableType.XS_QNAME) {
 				statement.setQName (xName, (String) value);
 
 		// TODO: Gregorian types, Base64/Hex binary types

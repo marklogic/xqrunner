@@ -51,6 +51,7 @@ public class XQFactory
 	public static final String XDBC_PROVIDER_CLASS =
 		"com.marklogic.xqrunner.xdbc.XdbcProvider";
 
+	public static final String DEFAULT_PROVIDER_NAME = XDBC_PROVIDER_NAME;
 	public static final String DEFAULT_PROVIDER_CLASS = XDBC_PROVIDER_CLASS;
 
 	private static Map defaultProviders = null;
@@ -99,9 +100,16 @@ public class XQFactory
 		}
 
 		provider = loadProvider (className);
+
+		provider.setName (providerName);
 	}
 
 	// -----------------------------------------------------------------
+
+	public String providerName()
+	{
+		return (provider.getName());
+	}
 
 	public XQDataSource newDataSource (String host, int port,
 		String user, String password)

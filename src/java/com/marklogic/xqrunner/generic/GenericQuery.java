@@ -19,12 +19,12 @@
 package com.marklogic.xqrunner.generic;
 
 import com.marklogic.xqrunner.XQuery;
-import com.marklogic.xqrunner.XQParameter;
-import com.marklogic.xqrunner.XQParameterType;
+import com.marklogic.xqrunner.XQVariable;
 
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 
 /**
  * Created by IntelliJ IDEA.
@@ -36,16 +36,11 @@ public class GenericQuery implements XQuery
 {
 	private String text;
 	private int timeout = -1;
-	private List params = Collections.synchronizedList (new ArrayList());
+	private List variables = Collections.synchronizedList (new ArrayList());
 
 	public GenericQuery (String text)
 	{
 		this.text = text;
-	}
-
-	public String asString()
-	{
-		return (text);
 	}
 
 	public String getBody()
@@ -53,37 +48,27 @@ public class GenericQuery implements XQuery
 		return (text);
 	}
 
-	public void clearParameters()
+	public void clearVariables()
 	{
-		params.clear();
+		variables.clear();
 	}
 
-	public void addParameter (XQParameter parameter)
+	public void addVariable (XQVariable variable)
 	{
-		params.add (parameter);
+		variables.add (variable);
 	}
 
-	public void addParameter (String nameSpace, String localName, XQParameterType type, Object value)
+	public XQVariable [] getVariables()
 	{
-		addParameter (new GenericParameter (nameSpace, localName, type, value));
-	}
+		XQVariable [] variableArray;
 
-	public void addParameter (String localName, XQParameterType type, Object value)
-	{
-		addParameter (null, localName, type, value);
-	}
+		synchronized (variables) {
+			variableArray = new XQVariable [variables.size()];
 
-	public XQParameter [] getParameters()
-	{
-		XQParameter [] paramArray;
-
-		synchronized (params) {
-			paramArray = new XQParameter [params.size()];
-
-			params.toArray (paramArray);
+			variables.toArray (variableArray);
 		}
 
-		return (paramArray);
+		return (variableArray);
 	}
 
 	public void setTimeout (int seconds)
@@ -94,5 +79,28 @@ public class GenericQuery implements XQuery
 	public int getTimeout()
 	{
 		return (timeout);
+	}
+
+	public String toString ()
+	{
+		StringBuffer sb = new StringBuffer();
+
+		synchronized (variables) {
+			if (variables.size() > 0) {
+				sb.append ("(: Variables :)\n");
+
+				for (Iterator it = variables.iterator (); it.hasNext ();) {
+					XQVariable variable = (XQVariable) it.next ();
+
+					sb.append (variable.toString ()).append ("\n");
+				}
+
+				sb.append ("(: Body :)\n");
+			}
+		}
+
+		sb.append (text);
+
+		return (sb.toString());
 	}
 }
