@@ -124,11 +124,6 @@ public class XQFactory
 		return (provider.newDataSource (key, user, password));
 	}
 
-	public XQRunner newSyncRunner (XQDataSource dataSource)
-	{
-		return (provider.newSyncRunner (dataSource));
-	}
-
 	// -----------------------------------------------------------------
 
 	private XQProvider loadProvider (String className)

@@ -20,7 +20,6 @@ package com.marklogic.xqrunner.xdbc;
 
 import com.marklogic.xqrunner.XQDataSource;
 import com.marklogic.xqrunner.XQException;
-import com.marklogic.xqrunner.XQRunner;
 import com.marklogic.xqrunner.spi.XQProvider;
 
 /**
@@ -55,10 +54,5 @@ public class XdbcProvider implements XQProvider
 		throws XQException
 	{
 		return (new XdbcDataSource (key, user, password));
-	}
-
-	public XQRunner newSyncRunner (XQDataSource dataSource)
-	{
-		return (new XdbcSyncRunner (dataSource));
 	}
 }

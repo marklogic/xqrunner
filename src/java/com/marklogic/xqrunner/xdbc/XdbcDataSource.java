@@ -24,11 +24,15 @@ import com.marklogic.xqrunner.XQuery;
 import com.marklogic.xqrunner.XQVariable;
 import com.marklogic.xqrunner.XQVariableType;
 import com.marklogic.xqrunner.XQDuration;
+import com.marklogic.xqrunner.XQRunner;
+import com.marklogic.xqrunner.XQAsyncRunner;
 import com.marklogic.xqrunner.generic.GenericQuery;
 import com.marklogic.xqrunner.generic.GenericVariable;
+import com.marklogic.xqrunner.generic.AsyncRunner;
 import com.marklogic.xdmp.XDMPDataSource;
 import com.marklogic.xdbc.XDBCException;
 import com.marklogic.xdbc.XDBCDuration;
+import com.marklogic.xdbc.XDBCConnection;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -71,7 +75,7 @@ public class XdbcDataSource implements XQDataSource
 
 	// ---------------------------------------------------------------
 
-	public Object getConnection()
+	public XDBCConnection getConnection()
 		throws XQException
 	{
 		try {
@@ -81,7 +85,7 @@ public class XdbcDataSource implements XQDataSource
 		}
 	}
 
-	public Object getConnection (String user, String password)
+	public XDBCConnection getConnection (String user, String password)
 		throws XQException
 	{
 		try {
@@ -89,6 +93,23 @@ public class XdbcDataSource implements XQDataSource
 		} catch (XDBCException e) {
 			throw new XQException (e.getMessage(), e);
 		}
+	}
+
+	// ---------------------------------------------------------------
+
+	public XQRunner newSyncRunner()
+	{
+		return (new XdbcSyncRunner (this));
+	}
+
+	public XQRunner newAsyncRunner()
+	{
+		return (new AsyncRunner (newSyncRunner()));
+	}
+
+	public XQAsyncRunner newAsyncRunner (XQRunner runner)
+	{
+		return (new AsyncRunner (runner));
 	}
 
 	public XQuery newQuery (String body)
@@ -195,13 +216,15 @@ public class XdbcDataSource implements XQDataSource
 	{
 		private final XDBCDuration duration;
 
-		// FIXME: Check XDBC API, what about Days?
 		private DurationAdapter (boolean positive, int years, int months, int days,
 			int hours, int minutes, int seconds, double subseconds)
 		{
 			duration = new XDBCDuration (
 				positive ? XDBCDuration.XDBC_DURATION_POSITIVE : XDBCDuration.XDBC_DURATION_NEGATIVE,
 				years, months, /*days,*/ hours, minutes, seconds, subseconds);
+
+			// FIXME: remove this when the API is fixed
+			duration.setDays (days);
 		}
 
 		private DurationAdapter (String value)

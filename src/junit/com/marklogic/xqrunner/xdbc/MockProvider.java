@@ -26,7 +26,10 @@ import com.marklogic.xqrunner.XQuery;
 import com.marklogic.xqrunner.XQResult;
 import com.marklogic.xqrunner.XQVariable;
 import com.marklogic.xqrunner.XQVariableType;
+import com.marklogic.xqrunner.XQAsyncRunner;
+import com.marklogic.xqrunner.XQDuration;
 import com.marklogic.xqrunner.generic.GenericQuery;
+import com.marklogic.xqrunner.generic.AsyncRunner;
 
 
 /**
@@ -80,6 +83,21 @@ public class MockProvider implements XQProvider
 			return null;
 		}
 
+		public XQRunner newSyncRunner ()
+		{
+			return (new MockRunner());
+		}
+
+		public XQRunner newAsyncRunner()
+		{
+			return (new AsyncRunner (newSyncRunner()));
+		}
+
+		public XQAsyncRunner newAsyncRunner (XQRunner runner)
+		{
+			return (new AsyncRunner (runner));
+		}
+
 		public XQuery newQuery (String body)
 		{
 			return (new GenericQuery (body));
@@ -121,6 +139,21 @@ public class MockProvider implements XQProvider
 		}
 
 		public XQVariable newVariable (String localname, boolean value)
+		{
+			return null;  // FIXME: auto-generated
+		}
+
+		public XQDuration newDuration (int years, int months, int days, int hours, int minutes, int seconds, double subseconds)
+		{
+			return null;  // FIXME: auto-generated
+		}
+
+		public XQDuration newDuration (boolean positive, int years, int months, int days, int hours, int minutes, int seconds, double subseconds)
+		{
+			return null;  // FIXME: auto-generated
+		}
+
+		public XQDuration newDuration (String value)
 		{
 			return null;  // FIXME: auto-generated
 		}

@@ -48,7 +48,7 @@ public class TestSync extends TestCase
 		String password = System.getProperty ("xqpw");
 
 		dataSource = factory.newDataSource (host, port, user, password);
-		runner = factory.newSyncRunner (dataSource);
+		runner = dataSource.newSyncRunner();
 	}
 
 	public void testSyncRun() throws XQException

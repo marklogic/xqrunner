@@ -26,7 +26,6 @@ import com.marklogic.xqrunner.XQException;
 import com.marklogic.xqrunner.XQAsyncRunner;
 import com.marklogic.xqrunner.XQProgressListener;
 import com.marklogic.xqrunner.XQResult;
-import com.marklogic.xqrunner.generic.AsyncRunner;
 
 /**
  * Created by IntelliJ IDEA.
@@ -38,6 +37,7 @@ public class TestAsync extends TestCase
 {
 	XQDataSource dataSource = null;
 	XQRunner runner = null;
+	XQAsyncRunner asyncRunner = null;
 
 	protected void setUp () throws Exception
 	{
@@ -46,7 +46,8 @@ public class TestAsync extends TestCase
 		XQFactory factory = new XQFactory("mock");
 
 		dataSource = factory.newDataSource (null, null, null);
-		runner = factory.newSyncRunner (dataSource);
+		runner = dataSource.newSyncRunner();
+		asyncRunner = dataSource.newAsyncRunner (runner);
 	}
 
 	public void testAsyncRunner() throws XQException, InterruptedException
@@ -56,8 +57,6 @@ public class TestAsync extends TestCase
 		assertFalse (mockRunner.isAborted());
 
 		mockRunner.setDelay (5000);
-
-		XQAsyncRunner asyncRunner = new AsyncRunner (runner);
 
 		try {
 			asyncRunner.abortQuery();
@@ -90,8 +89,6 @@ public class TestAsync extends TestCase
 
 		mockRunner.setDelay (1000);
 
-		XQAsyncRunner asyncRunner = new AsyncRunner (runner);
-
 		asyncRunner.startQuery (dataSource.newQuery ("\"Hello World\""));
 
 		asyncRunner.awaitQueryCompletion();
@@ -112,7 +109,6 @@ public class TestAsync extends TestCase
 
 		mockRunner.setDelay (200);
 
-		XQAsyncRunner asyncRunner = new AsyncRunner (runner);
 		MockListener listener = new MockListener();
 
 		asyncRunner.registerListener (listener, null);
@@ -134,7 +130,6 @@ public class TestAsync extends TestCase
 
 		mockRunner.setDelay (10000);
 
-		XQAsyncRunner asyncRunner = new AsyncRunner (runner);
 		MockListener listener = new MockListener();
 
 		asyncRunner.registerListener (listener, null);
@@ -164,7 +159,6 @@ public class TestAsync extends TestCase
 
 		mockRunner.setDelay (5000);
 
-		XQAsyncRunner asyncRunner = new AsyncRunner (runner);
 		MockListener listener = new MockListener();
 
 		asyncRunner.registerListener (listener, null);
@@ -193,7 +187,6 @@ public class TestAsync extends TestCase
 
 		mockRunner.setDelay (10000);
 
-		XQAsyncRunner asyncRunner = new AsyncRunner (runner);
 		MockListener listener = new MockListener();
 
 		asyncRunner.registerListener (listener, null);
@@ -240,7 +233,6 @@ public class TestAsync extends TestCase
 
 		mockRunner.setDelay (200);
 
-		XQAsyncRunner asyncRunner = new AsyncRunner (runner);
 		MockListener listener = new MockListener();
 		MockListener listener2 = new MockListener();
 
@@ -269,7 +261,6 @@ public class TestAsync extends TestCase
 
 		mockRunner.setDelay (200);
 
-		XQAsyncRunner asyncRunner = new AsyncRunner (runner);
 		MockListener listener = new MockListener();
 
 		asyncRunner.registerListener (listener, null);
@@ -306,7 +297,6 @@ public class TestAsync extends TestCase
 
 		mockRunner.setDelay (200);
 
-		XQAsyncRunner asyncRunner = new AsyncRunner (runner);
 		MockListener listener = new MockListener();
 		MockListener listener2 = new MockListener();
 

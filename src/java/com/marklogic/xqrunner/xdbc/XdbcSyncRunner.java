@@ -24,7 +24,6 @@ import com.marklogic.xdbc.XDBCResultSequence;
 import com.marklogic.xdbc.XDBCSchemaTypes;
 import com.marklogic.xdbc.XDBCStatement;
 import com.marklogic.xdbc.XDBCXName;
-import com.marklogic.xqrunner.XQDataSource;
 import com.marklogic.xqrunner.XQException;
 import com.marklogic.xqrunner.XQResult;
 import com.marklogic.xqrunner.XQResultItem;
@@ -56,10 +55,10 @@ import java.math.BigInteger;
  */
 public class XdbcSyncRunner implements XQRunner
 {
-	private XQDataSource datasource;
+	private XdbcDataSource datasource;
 	private volatile XDBCStatement statement = null;
 
-	public XdbcSyncRunner (XQDataSource datasource)
+	public XdbcSyncRunner (XdbcDataSource datasource)
 	{
 		this.datasource = datasource;
 	}
@@ -71,7 +70,7 @@ public class XdbcSyncRunner implements XQRunner
 		XDBCResultSequence resultSequence = null;
 
 		try {
-			connection = (XDBCConnection) datasource.getConnection();
+			connection = datasource.getConnection();
 			statement = connection.createStatement();
 
 			if (query.getTimeout() != -1) {
@@ -207,7 +206,6 @@ public class XdbcSyncRunner implements XQRunner
 			} else if (type == XQVariableType.XS_BASE64BINARY) {
 				statement.setBase64Binary (xName, (String) value);
 
-//statement.set
 			} else {
 				throw new UnsupportedOperationException ("FIXME: implement '" + type + "'");
 			}
@@ -229,6 +227,7 @@ public class XdbcSyncRunner implements XQRunner
 	}
 
 	// ------------------------------------------------------------
+	// FIXME: break this out to a top-level class?
 
 	private class ResultImpl implements XQResult
 	{
@@ -443,6 +442,7 @@ public class XdbcSyncRunner implements XQRunner
 			case XDBCResultSequence.XDBC_Boolean:
 				return (xdbcResultSequence.getBoolean().asBoolean());
 
+			// FIXME: Handle Gregorian dates
 			case XDBCResultSequence.XDBC_Date:
 			case XDBCResultSequence.XDBC_DateTime:
 			case XDBCResultSequence.XDBC_Time:
@@ -463,6 +463,8 @@ public class XdbcSyncRunner implements XQRunner
 
 			case XDBCResultSequence.XDBC_String:
 				return (xdbcResultSequence.get_String());
+
+			// FIXME: Handle BLOBs and other sundry types
 
 			default:
 				throw new XDBCException ("Unexpected result type: " + xdbcResultSequence.getItemType());

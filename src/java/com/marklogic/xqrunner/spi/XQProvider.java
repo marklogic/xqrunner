@@ -20,7 +20,6 @@ package com.marklogic.xqrunner.spi;
 
 import com.marklogic.xqrunner.XQDataSource;
 import com.marklogic.xqrunner.XQException;
-import com.marklogic.xqrunner.XQRunner;
 
 /**
  * Created by IntelliJ IDEA.
@@ -34,5 +33,4 @@ public interface XQProvider
 	String getName();
 	XQDataSource newDataSource (String host, int port, String user, String password) throws XQException;
 	XQDataSource newDataSource (String key, String user, String password) throws XQException;
-	XQRunner newSyncRunner (XQDataSource dataSource);
 }
