@@ -23,8 +23,7 @@ import com.marklogic.xqrunner.XQRunner;
 import com.marklogic.xqrunner.XQDataSource;
 import com.marklogic.xqrunner.XQException;
 import com.marklogic.xqrunner.XQResult;
-import com.marklogic.xqrunner.XQRunnerFactory;
-import com.marklogic.xqrunner.generic.SimpleQuery;
+import com.marklogic.xqrunner.XQFactory;
 
 /**
  * Created by IntelliJ IDEA.
@@ -41,15 +40,15 @@ public class TestSync extends TestCase
 	{
 		super.setUp ();
 
-		XQRunnerFactory factory = new XQRunnerFactory();
+		XQFactory factory = new XQFactory();
 
 		String host = System.getProperty ("xqhost");
 		int port = Integer.parseInt (System.getProperty ("xqport"));
 		String user = System.getProperty ("xquser");
 		String password = System.getProperty ("xqpw");
 
-		dataSource = factory.newDataSource ("xdbc", host, port, user, password);
-		runner = factory.newSyncRunner ("xdbc", dataSource);
+		dataSource = factory.newDataSource (host, port, user, password);
+		runner = factory.newSyncRunner (dataSource);
 	}
 
 	public void testSyncRun() throws XQException
@@ -61,7 +60,7 @@ public class TestSync extends TestCase
 			// good result
 		}
 
-		XQResult result = runner.runQuery (new SimpleQuery ("\"Hello World\""));
+		XQResult result = runner.runQuery (dataSource.newQuery ("\"Hello World\""));
 
 		assertEquals ("Hello World", result.asString ());
 
@@ -72,11 +71,11 @@ public class TestSync extends TestCase
 			// good result
 		}
 
-		result = runner.runQuery (new SimpleQuery ("concat (\"foo \", \"bar\")"));
+		result = runner.runQuery (dataSource.newQuery ("concat (\"foo \", \"bar\")"));
 
 		assertEquals ("foo bar", result.asString ());
 
-		result = runner.runQuery (new SimpleQuery ("<frobule>{attribute {\"foo\"}{\"bar\"}}</frobule>"));
+		result = runner.runQuery (dataSource.newQuery ("<frobule>{attribute {\"foo\"}{\"bar\"}}</frobule>"));
 
 		assertEquals ("<frobule foo=\"bar\"/>", result.asString ());
 

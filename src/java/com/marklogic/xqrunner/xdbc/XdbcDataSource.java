@@ -20,6 +20,8 @@ package com.marklogic.xqrunner.xdbc;
 
 import com.marklogic.xqrunner.XQDataSource;
 import com.marklogic.xqrunner.XQException;
+import com.marklogic.xqrunner.XQuery;
+import com.marklogic.xqrunner.generic.GenericQuery;
 import com.marklogic.xdmp.XDMPDataSource;
 import com.marklogic.xdbc.XDBCException;
 
@@ -82,6 +84,11 @@ public class XdbcDataSource implements XQDataSource
 		} catch (XDBCException e) {
 			throw new XQException (e.getMessage(), e);
 		}
+	}
+
+	public XQuery newQuery (String body)
+	{
+		return (new GenericQuery (body));
 	}
 
 	// ---------------------------------------------------------------

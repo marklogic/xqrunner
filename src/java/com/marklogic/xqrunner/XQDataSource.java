@@ -28,4 +28,5 @@ public interface XQDataSource
 {
 	Object getConnection() throws XQException;
 	Object getConnection (String user, String password) throws XQException;
+	XQuery newQuery (String body);
 }

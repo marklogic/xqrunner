@@ -28,33 +28,39 @@ import junit.framework.TestCase;
  */
 public class TestFactory extends TestCase
 {
-	public void testProvider()
+	public void testProvider() throws XQException
 	{
-		XQRunnerFactory factory = new XQRunnerFactory();
-
-		factory.getProvider (XQRunnerFactory.DEFAULT_PROVIDER_NAME);
+		new XQFactory (XQFactory.XDBC_PROVIDER_NAME);
 
 		try {
-			factory.getProvider ("dfsghr");
+			new XQFactory ("dfsghr");
 			fail ("found provider for bogus provider");
 		} catch (UnsupportedOperationException e) {
 			// expected result
 		}
 
-		String sysProp = XQRunnerFactory.PROPERTY_PREFIX + "xyzzy";
-		System.setProperty (sysProp, XQRunnerFactory.DEFAULT_PROVIDER_CLASS);
+		String sysProp = XQFactory.PROPERTY_PREFIX + "xyzzy";
+		System.setProperty (sysProp, XQFactory.XDBC_PROVIDER_CLASS);
 
-		factory = new XQRunnerFactory();
-
-		factory.getProvider ("xyzzy");
+		new XQFactory ("xyzzy");
 
 		try {
-			factory.getProvider (XQRunnerFactory.DEFAULT_PROVIDER_NAME);
+			new XQFactory ("dgfhdghdfgh");
 			fail ("found provider for bogus provider");
 		} catch (UnsupportedOperationException e) {
 			// expected result
 		}
+
 
 		System.getProperties().remove (sysProp);
+
+		new XQFactory (XQFactory.XDBC_PROVIDER_NAME);
+
+		try {
+			new XQFactory ("xyzzy");
+			fail ("found provider for bogus provider");
+		} catch (UnsupportedOperationException e) {
+			// expected result
+		}
 	}
 }
