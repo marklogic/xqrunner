@@ -34,6 +34,28 @@ import java.io.UnsupportedEncodingException;
  */
 public class GenericDocumentWrapper implements XQDocumentWrapper
 {
+	// TODO: Refactor this to a common API class?
+	public static class DocumentType
+	{
+		private String name;
+		private DocumentType (String name) { this.name = name; }
+		public String toString() { return name; };
+	}
+
+	public static final DocumentType XML = new DocumentType ("xml");
+	public static final DocumentType TEXT = new DocumentType ("text");
+	public static final DocumentType BINARY = new DocumentType ("binary");
+
+	public static DocumentType typeFor (String typeName)
+	{
+		if ("xml".equals (typeName)) return (XML);
+		if ("text".equals (typeName)) return (TEXT);
+		if ("binary".equals (typeName)) return (BINARY);
+		return (null);
+	}
+
+	// ---------------------------------------------------------------
+
 	private String body = null;
 	private InputStream inputStream = null;
 	private Reader reader = null;
@@ -85,6 +107,13 @@ public class GenericDocumentWrapper implements XQDocumentWrapper
 		return new GenericDocumentWrapper (text, false);
 	}
 
+	public static XQDocumentWrapper newDoc (String text, DocumentType docType)
+	{
+		return new GenericDocumentWrapper (text, docType == XML);
+	}
+
+	// ---------------------------------------------------------------
+
 	public static XQDocumentWrapper newXml (Reader reader)
 	{
 		return new GenericDocumentWrapper (reader, true);
@@ -93,6 +122,11 @@ public class GenericDocumentWrapper implements XQDocumentWrapper
 	public static XQDocumentWrapper newText (Reader reader)
 	{
 		return new GenericDocumentWrapper (reader, false);
+	}
+
+	public static XQDocumentWrapper newDoc (Reader reader, DocumentType docType)
+	{
+		return new GenericDocumentWrapper (reader, docType == XML);
 	}
 
 	public static XQDocumentWrapper newXml (InputStream inputStream)
@@ -108,6 +142,16 @@ public class GenericDocumentWrapper implements XQDocumentWrapper
 	public static XQDocumentWrapper newBinary (InputStream inputStream)
 	{
 		return new GenericDocumentWrapper (inputStream);
+	}
+
+	public static XQDocumentWrapper newDoc (InputStream inputStream, DocumentType docType)
+	{
+		if (docType == BINARY) {
+			return new GenericDocumentWrapper (inputStream);
+
+		}
+
+		return new GenericDocumentWrapper (inputStream, docType == XML);
 	}
 
 	// ---------------------------------------------------------------

@@ -28,6 +28,8 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.ByteArrayInputStream;
 
+// FIXME: Refactor this to eliminate duplicate comparisons
+
 /**
  * Created by IntelliJ IDEA.
  * User: ron
@@ -215,6 +217,117 @@ public class TestDocument extends TestCase
 		} catch (IllegalStateException e) {
 			// ok
 		}
+	}
+
+	public void testStringTypedConstructor() throws IOException
+	{
+		XQDocumentWrapper doc = GenericDocumentWrapper.newDoc ("<foobar>blah</foobar>", GenericDocumentWrapper.XML);
+
+		assertTrue (doc.isXml());
+		assertFalse (doc.isText());
+		assertFalse (doc.isBinary());
+
+		String value = stringFromReader (doc.asReader());
+		assertEquals ("<foobar>blah</foobar>", value);
+
+		value = stringFromReader (doc.asReader());
+		assertEquals ("<foobar>blah</foobar>", value);
+
+		value = stringFromStream (doc.asStream());
+		assertEquals ("<foobar>blah</foobar>", value);
+
+		value = stringFromStream (doc.asStream());
+		assertEquals ("<foobar>blah</foobar>", value);
+
+	}
+
+	public void testTextTypedConstructor() throws IOException
+	{
+		XQDocumentWrapper doc = GenericDocumentWrapper.newDoc ("<foobar>blah</foobar>", GenericDocumentWrapper.TEXT);
+
+		assertFalse (doc.isXml());
+		assertTrue (doc.isText());
+		assertFalse (doc.isBinary());
+
+		String value = stringFromReader (doc.asReader());
+		assertEquals ("<foobar>blah</foobar>", value);
+
+		value = stringFromReader (doc.asReader());
+		assertEquals ("<foobar>blah</foobar>", value);
+
+		value = stringFromStream (doc.asStream());
+		assertEquals ("<foobar>blah</foobar>", value);
+
+		value = stringFromStream (doc.asStream());
+		assertEquals ("<foobar>blah</foobar>", value);
+
+	}
+
+	public void testReaderTypedConstructor() throws IOException
+	{
+		Reader reader = new StringReader ("<foobar>blah</foobar>");
+		XQDocumentWrapper doc = GenericDocumentWrapper.newDoc (reader, GenericDocumentWrapper.TEXT);
+
+		assertFalse (doc.isXml());
+		assertTrue (doc.isText());
+		assertFalse (doc.isBinary());
+
+		String value = stringFromReader (doc.asReader());
+		assertEquals ("<foobar>blah</foobar>", value);
+
+		try {
+			value = stringFromReader (doc.asReader());
+			fail ("Expect IllegalStateException");
+		} catch (IllegalStateException e) {
+			// ok
+		}
+
+		try {
+			value = stringFromStream (doc.asStream());
+			fail ("Expect IllegalStateException");
+		} catch (IllegalStateException e) {
+			// ok
+		}
+	}
+
+	public void testStreamBinaryTypedConstructor() throws IOException
+	{
+		byte [] bytes = { 12, 32, (byte) 0xfd, 17, 127, 46, (byte) 0xb7 };
+		ByteArrayInputStream bis = new ByteArrayInputStream (bytes);
+		XQDocumentWrapper doc = GenericDocumentWrapper.newDoc (bis, GenericDocumentWrapper.BINARY);
+
+		assertFalse (doc.isXml());
+		assertFalse (doc.isText());
+		assertTrue (doc.isBinary());
+
+		byte [] value = bytesFromStream (doc.asStream());
+
+		for (int i = 0; i < value.length; i++) {
+			assertEquals ("byte " + i + ": ", value [i], bytes [i]);
+		}
+
+		try {
+			value = bytesFromStream (doc.asStream());
+			fail ("Expect IllegalStateException");
+		} catch (IllegalStateException e) {
+			// ok
+		}
+
+		try {
+			doc.asReader();
+			fail ("Expect IllegalStateException");
+		} catch (IllegalStateException e) {
+			// ok
+		}
+	}
+
+	public void testDocType()
+	{
+		assertNull (GenericDocumentWrapper.typeFor (null));
+		assertNull (GenericDocumentWrapper.typeFor ("foo"));
+		assertSame (GenericDocumentWrapper.XML, GenericDocumentWrapper.typeFor ("xml"));
+		assertSame (GenericDocumentWrapper.TEXT, GenericDocumentWrapper.typeFor ("text"));
+		assertSame (GenericDocumentWrapper.BINARY, GenericDocumentWrapper.typeFor ("binary"));
 	}
 
 	// --------------------------------------------------------

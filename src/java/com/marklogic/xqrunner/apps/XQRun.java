@@ -1,27 +1,22 @@
 package com.marklogic.xqrunner.apps;
 
 import com.marklogic.xqrunner.XQDataSource;
-import com.marklogic.xqrunner.XQuery;
-import com.marklogic.xqrunner.XQFactory;
+import com.marklogic.xqrunner.XQException;
+import com.marklogic.xqrunner.XQResult;
 import com.marklogic.xqrunner.XQVariable;
 import com.marklogic.xqrunner.XQVariableType;
-import com.marklogic.xqrunner.XQResult;
-import com.marklogic.xqrunner.XQException;
+import com.marklogic.xqrunner.XQuery;
 
-import java.net.URI;
-import java.util.List;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.regex.Pattern;
+import java.util.List;
 import java.util.regex.Matcher;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.Writer;
-import java.io.BufferedWriter;
-import java.io.PrintWriter;
-import java.io.FileWriter;
-import java.io.InputStreamReader;
+import java.util.regex.Pattern;
 
 /**
  * Run a query on a remote CIS server and return the result.
@@ -45,7 +40,7 @@ public class XQRun
 	public XQRun (Args args)
 		throws Exception
 	{
-		dataSource = buildDataSource (args);
+		dataSource = AppHelper.createDataSource (args);
 		output = setupOutput (args);
 		query = buildQuery (dataSource, args);
 	}
@@ -54,33 +49,11 @@ public class XQRun
 	{
 		XQResult result = dataSource.newSyncRunner().runQuery (query);
 
-		String foo = result.asString();
-		output.write (foo);
+		result.writeTo (output);
 		output.flush();
 	}
 
 	// ----------------------------------------------------------------
-
-	private XQDataSource buildDataSource (Args args)
-		throws Exception
-	{
-		// -u filename-containing-server-uri
-		String uri = args.findAndConsumeNamedArg ("-u");
-
-		if (uri == null) {
-			uri = args.consumeArg();
-		} else {
-			uri = loadFromFile (uri, "");
-		}
-
-		if (uri == null) {
-			throw new Exception ("No server URI provided");
-		}
-
-		URI serverUri = new URI (uri);
-
-		return XQFactory.newDataSource (serverUri);
-	}
 
 	private XQuery buildQuery (XQDataSource dataSource, Args args)
 		throws Exception
@@ -90,7 +63,7 @@ public class XQRun
 
 		if (queryText == null) {
 			String fileName = args.findAndConsumeNamedArg ("-f");
-			queryText = loadFromFile (fileName, "\n");
+			queryText = AppHelper.loadStringFromFile (fileName, "\n");
 
 			if (queryText == null) {
 				throw new Exception ("Cannot load query from file: " + fileName);
@@ -130,33 +103,6 @@ public class XQRun
 		} else {
 			return (new BufferedWriter (new FileWriter (filename)));
 		}
-	}
-
-	private String loadFromFile (String path, String sep)
-		throws IOException
-	{
-		if (path == null) {
-			return (null);
-		}
-
-		BufferedReader reader;
-
-		if (path.equals ("-")) {
-			reader = new BufferedReader (new InputStreamReader (System.in));
-		} else{
-			reader = new BufferedReader (new FileReader (path));
-		}
-
-		StringBuffer sb = new StringBuffer();
-		String line = null;
-
-		while ((line = reader.readLine()) != null) {
-			sb.append (line).append (sep) ;
-		}
-
-		reader.close();
-
-		return (sb.toString());
 	}
 
 	// -----------------------------------------------------------------
@@ -219,7 +165,7 @@ public class XQRun
 
 		} catch (Exception e) {
 			System.err.println (e.getMessage ());
-			System.err.println ("usage: (serverURI | -u filename) [(type)varname=value]* (-f filename | -q query | -i moduleuri) [-o outfilename]");
+			System.err.println ("usage: (serverURI | -s URIfilename) [(type)varname=value]* (-f filename | -q query | -i moduleuri) [-o outfilename]");
 			System.err.println ("  Form of server URI is: xdbc://user:password@host:port");
 			System.err.println ("  Any number of variables may be provided");
 			System.err.println ("  With -f, filename contains XQuery code to run");
