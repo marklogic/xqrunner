@@ -90,12 +90,12 @@ public class TestFactory extends TestCase
 		assertEquals (XQFactory.DEFAULT_PROVIDER_NAME, factory.providerName());
 	}
 
-	private void checkBadUri (XQFactory factory, String rawUri) throws URISyntaxException
+	private void checkBadUri (String rawUri) throws URISyntaxException
 	{
 		URI uri = new URI (rawUri);
 
 		try {
-			factory.newDataSource (uri);
+			XQFactory.newDataSource (uri);
 			fail ("Expected execption here");
 		} catch (XQException e) {
 			// expected result
@@ -105,26 +105,26 @@ public class TestFactory extends TestCase
 
 	public void testURI() throws XQException, URISyntaxException
 	{
-		XQFactory factory = new XQFactory();
+//		XQFactory factory = new XQFactory();
 		String scheme = XQFactory.DEFAULT_PROVIDER_NAME;
 
-		checkBadUri (factory, host + ":" + port);
+		checkBadUri (host + ":" + port);
 
 //		checkBadUri (factory, user + "@" + host + ":" + port);
-		checkBadUri (factory, scheme + "://" + user + "@" + host + ":" + port);
+		checkBadUri (scheme + "://" + user + "@" + host + ":" + port);
 
 //		checkBadUri (factory, ":" + password + "@" + host + ":" + port);
-		checkBadUri (factory, scheme + "://" + ":" + password + "@" + host + ":" + port);
+		checkBadUri (scheme + "://" + ":" + password + "@" + host + ":" + port);
 
-		checkBadUri (factory, "xyzzy://" + ":" + password + "@" + host + ":" + port);
+		checkBadUri ("xyzzy://" + ":" + password + "@" + host + ":" + port);
 
-		factory.newDataSource (new URI (scheme + "://" + user + ":" + password + "@" + host + ":" + port));
+		XQFactory.newDataSource (new URI (scheme + "://" + user + ":" + password + "@" + host + ":" + port));
 
 		String sysProp = XQFactory.PROPERTY_PREFIX + "xyzzy";
 		System.setProperty (sysProp, XQFactory.XDBC_PROVIDER_CLASS);
 
-		factory = new XQFactory ("xyzzy");
+//		factory = new XQFactory ("xyzzy");
 
-		factory.newDataSource (new URI ("xyzzy://" + user + ":" + password + "@" + host + ":" + port));
+		XQFactory.newDataSource (new URI ("xyzzy://" + user + ":" + password + "@" + host + ":" + port));
 	}
 }

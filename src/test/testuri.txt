@@ -1,1 +1,1 @@
-xdbc://ron:biteme@ronsoft.net:8003
+xdbc://ron:secret@ronsoft.net:8003

@@ -226,4 +226,28 @@ public class TestArgs extends TestCase
 		assertEquals ("bop", args.nextArg());
 		assertNull (args.nextArg());
 	}
+
+	public void testExtractArg()
+	{
+		Args args = new Args (new String [] { "foo", "-phat", "bar", "-f", "filename", "-phat", "bop", "-x" });
+
+		assertEquals (8, args.size());
+		assertNull (args.findAndConsumeNamedArg ("-q"));
+		assertEquals (8, args.size());
+
+		assertEquals ("hat", args.findAndConsumeNamedArg ("-p"));
+		assertEquals (7, args.size());
+		assertEquals ("foo", args.getArg (0));
+		assertEquals ("bar", args.getArg (1));
+
+		assertEquals ("-f", args.getArg (2));
+		assertEquals ("filename", args.getArg (3));
+		assertEquals ("filename", args.findAndConsumeNamedArg ("-f"));
+		assertEquals (5, args.size());
+		assertEquals ("bar", args.getArg (1));
+		assertEquals ("-phat", args.getArg (2));
+
+		assertNull (args.findAndConsumeNamedArg ("-x"));
+		assertEquals (4, args.size());
+	}
 }

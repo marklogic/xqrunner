@@ -118,30 +118,52 @@ public class XQFactory
 		return (provider.newDataSource (host, port, user, password));
 	}
 
-	public XQDataSource newDataSource (URI serverUri)
+	public XQDataSource newDataSource (String key, String user, String password)
+		throws XQException
+	{
+		return (provider.newDataSource (key, user, password));
+	}
+
+	// -----------------------------------------------------------------
+
+	/**
+	 * Return an XQDataSource instance as described by the provided URI.
+	 * The form of the URI is provider://user:password@serverhost:port.  There
+	 * is no default provider, one must be named explicitly.  The XDBC
+	 * provider ("xdbc") is guaranteed to always be configured.<br>
+	 * Examples:<br>
+	 *    xdbc://admin:secret@localhost:8003<br>
+	 *    xdbc://joe:hush@somehost.somewhere.com:9032
+	 * @param serverUri A URI which identifies the XQProvider, user,
+	 *  password, host and port to which the connection should be made.
+	 * @return An XQDataSource instance
+	 * @throws XQException If the named provider is not configured or
+	 *  there is some other problem with the URI.
+	 */
+	public static XQDataSource newDataSource (URI serverUri)
 		throws XQException
 	{
 		String scheme = serverUri.getScheme();
+		XQFactory factory = null;
+
+		try {
+			factory = new XQFactory (scheme);
+		} catch (XQException e) {
+			throw e;
+
+		} catch (Exception e) {
+			throw new XQException ("Cannot create XQFactory: " + e);
+		}
+
 		String userInfoStr = serverUri.getUserInfo();
 		String [] userInfo = (userInfoStr == null) ? (new String [0]) : userInfoStr.split (":");
-
-		if ((scheme != null) && (scheme.equals (provider.getName()) == false)) {
-			throw new XQException ("This provider (" + provider.getName() +
-				") does not match URI scheme (" + scheme + ")");
-		}
 
 		if ((userInfo.length != 2) || (userInfo [0].length() == 0) || (userInfo [1].length() == 0)) {
 			throw new XQException ("Expected user:password, found: " + userInfoStr);
 		}
 
-		return (newDataSource (serverUri.getHost(), serverUri.getPort(),
+		return (factory.newDataSource (serverUri.getHost(), serverUri.getPort(),
 			userInfo [0], userInfo [1]));
-	}
-
-	public XQDataSource newDataSource (String key, String user, String password)
-		throws XQException
-	{
-		return (provider.newDataSource (key, user, password));
 	}
 
 	// -----------------------------------------------------------------

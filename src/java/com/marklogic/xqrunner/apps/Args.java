@@ -20,6 +20,7 @@ package com.marklogic.xqrunner.apps;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 
 /**
@@ -132,5 +133,35 @@ public class Args
 	public void pushBack (String arg, int index)
 	{
 		argv.add (index, arg);
+	}
+
+	public String findAndConsumeNamedArg (String switchName)
+	{
+		boolean switchFound = false;
+
+		for (Iterator it = argv.iterator (); it.hasNext ();) {
+			String arg = (String) it.next ();
+
+			if (switchFound) {
+				it.remove();
+				return (arg);
+			}
+
+			if ( ! arg.startsWith (switchName)) {
+				continue;
+			}
+
+			if ( ! arg.equals (switchName)) {
+				String result = arg.substring (switchName.length());
+
+				it.remove();
+				return (result);
+			}
+
+			it.remove();
+			switchFound = true;
+		}
+
+		return (null);
 	}
 }
