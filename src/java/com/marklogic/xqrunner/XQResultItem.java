@@ -19,6 +19,10 @@
 package com.marklogic.xqrunner;
 
 import java.io.Reader;
+import java.io.Writer;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  * One item in a sequence of results.
@@ -32,18 +36,31 @@ public interface XQResultItem
 	int getIndex();
 
 	/**
+	 * @return True if this item is streaming.  This will always be false
+	 * for atomic values, even if the owning XQResult is streaming.
+	 */
+	boolean isStreaming();
+
+	/**
 	 * @return True if this result is an XML DOM node, otherwise false.
 	 */
 	boolean isNode();
 
 	/**
+	 * @return The type of the item, as defined in the XQVariableType class.
+	 */
+	XQVariableType getType();
+
+	/**
 	 * @return This result as an object.  The actual object type
-	 * of object instance is determined by the type os the result.
+	 * of object instance is determined by the type of the result.
 	 * If this is a node (isNode() == true), the type will be
-	 * XDBCSchemaTypes.Node.  Date types will be java.util.Date,
-	 * booleans will be Boolean and numeric types will be the
-	 * appropriate java.lang numeric object type.  Strings will
-	 * be java.lang.String.
+	 * an opaque object.  Call asW3CDom() or as JDom() to obtain
+	 * a DOM you can to work with.
+	 * Objects returned for atomic types will be appropriate types:
+	 * Date types will be java.util.Date, booleans will be Boolean
+	 * and numeric types will be the appropriate java.lang numeric
+	 * object type.  Strings will be java.lang.String.
 	 */
 	Object asObject();
 
@@ -71,8 +88,50 @@ public interface XQResultItem
 
 	/**
 	 * @return A Reader from which the String representation of this
-	 *  result item can be read.  This a StringReader instance over
-	 *  the return value of getString().
+	 *  result item can be read.  If this item is buffered, this method
+	 *  may be called multiple times.  If streaming, it may only be called
+	 *  once.
+	 * @throws XQException If there is a problem converting this
+	 * result item to a Reader.
+	 * @throws IllegalStateException If called more than once while streaming.
 	 */
-	Reader asReader();
+	Reader asReader() throws XQException;
+
+	/**
+ 	 * @return An InputStream from which the byte representation of
+	 *  this item can be read.  If this item is buffered, this method
+	 *  may be called multiple times.  If streaming, it may only be
+	 *  called once.  For non-binary types, the bytes read from this
+	 *  stream will be the default encoding of the String representation.
+	 * @throws XQException If there is a problem converting this
+	 * result item to a stream.
+	 * @throws IllegalStateException If called more than once while streaming.
+	 */
+	InputStream asStream() throws XQException;
+
+	/**
+	 * @return The byte representation of this item as a byte array.
+	 *  For non-binary types, the bytes read from this stream will be
+	 *  the default encoding of the String representation.
+	 * @throws XQException If there is a problem converting this
+	 * result item to a byte array.
+	 */
+	byte [] asBytes() throws IOException, XQException;
+
+	/**
+	 * Write the String representation of this result item to the
+	 * given Writer.
+	 * @param writer The writer to send the String representaiton to.
+	 */
+	void writeTo (Writer writer) throws IOException, XQException;
+
+	/**
+	 * Send the byte-array representation of this item to the given
+	 * OutputStream.
+	 * @param stream The OutputStream to send the bytes to.
+	 * @throws IOException If there is a problem writing to the stream.
+	 * @throws XQException If there is a problem marshaling the bytes
+	 *  for this item.  This will only happen if the item is streaming.
+	 */
+	void streamTo (OutputStream stream) throws IOException, XQException;
 }

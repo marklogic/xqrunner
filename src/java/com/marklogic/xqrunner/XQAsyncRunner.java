@@ -33,6 +33,15 @@ public interface XQAsyncRunner extends XQRunner
 	void startQuery (XQuery query);
 
 	/**
+	 * Start the given query running and return.  The query
+	 * will be processed asynchronously and registered listeners
+	 * will be notified of query progress.  The Result will be
+	 * streaming.
+	 * @param query The XQuery instance to be executed.
+	 */
+	void startQueryStreaming (XQuery query);
+
+	/**
 	 * Register the given listener (with the provided attachement),
 	 * start the query and return.
 	 * @param query The query to be processed.

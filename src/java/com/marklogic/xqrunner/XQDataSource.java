@@ -27,7 +27,7 @@ package com.marklogic.xqrunner;
 public interface XQDataSource
 {
 	XQRunner newSyncRunner();
-	XQRunner newAsyncRunner();
+	XQAsyncRunner newAsyncRunner();
 	XQAsyncRunner newAsyncRunner (XQRunner runner);
 
 	XQuery newQuery (String body);

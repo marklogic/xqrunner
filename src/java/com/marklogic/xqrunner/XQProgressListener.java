@@ -26,8 +26,8 @@ package com.marklogic.xqrunner;
  */
 public interface XQProgressListener
 {
-	void queryStarted (XQRunner runner, Object attachment);
-	void queryFinished (XQRunner runner, XQResult result, Object attachment);
-	void queryAborted (XQRunner runner, Object attachment);
-	void queryFailed (XQRunner runner, Throwable throwable, Object attachment);
+	void queryStarted (XQAsyncRunner runner, Object attachment);
+	void queryFinished (XQAsyncRunner runner, XQResult result, Object attachment);
+	void queryAborted (XQAsyncRunner runner, Object attachment);
+	void queryFailed (XQAsyncRunner runner, Throwable throwable, Object attachment);
 }

@@ -18,6 +18,8 @@
  */
 package com.marklogic.xqrunner;
 
+import java.io.IOException;
+
 /**
  * The API interface for a synchronous XQuery Runner.
  * @author Ron Hitchens, Mark Logic Corporation
@@ -31,6 +33,17 @@ public interface XQRunner
 	 * @throws XQException If a problem occurs while processing the query.
 	 */
 	XQResult runQuery (XQuery query) throws XQException;
+
+	/**
+	 * Run the given query synchronously and return a streaming result.
+	 * @param query An XQuery instance that will be executed on the server.
+	 * @return An XQResult object containing the buffered result.
+	 * @throws XQException If a problem occurs while processing the query.
+	 */
+	XQResult runQueryStreaming (XQuery query) throws XQException;
+
+	void insertDocument (String uri, XQDocumentWrapper documentWrapper, XQDocumentMetaData metaData)
+		throws XQException, IOException;
 
 	/**
 	 * Abort a running query, if possible.

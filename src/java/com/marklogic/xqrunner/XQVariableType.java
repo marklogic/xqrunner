@@ -18,6 +18,11 @@
  */
 package com.marklogic.xqrunner;
 
+import java.util.Map;
+import java.util.HashMap;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+
 /**
  * Created by IntelliJ IDEA.
  * User: ron
@@ -36,6 +41,15 @@ public class XQVariableType
 	public String toString ()
 	{
 		return (displayName);
+	}
+
+	// ----------------------------------------------------------
+
+	private static final Map typeMap = new HashMap();
+
+	public static XQVariableType forType (String schemaType)
+	{
+		return (XQVariableType) typeMap.get (schemaType);
 	}
 
 	public static final XQVariableType NULL = new XQVariableType ("--null--");
@@ -61,4 +75,28 @@ public class XQVariableType
 	public static final XQVariableType XS_GYEARMONTH = new XQVariableType ("xs:gYearMonth");
 	public static final XQVariableType XS_HEXBINARY = new XQVariableType ("xs:hexBinary");
 	public static final XQVariableType XS_BASE64BINARY = new XQVariableType ("xs:base64Binary");
+
+	static {
+		Field [] fields = XQVariableType.class.getFields();
+
+		for (int i = 0; i < fields.length; i++) {
+			Field field = fields[i];
+			Object value = null;
+
+			if ( ! Modifier.isStatic (field.getModifiers())) {
+				continue;
+			}
+
+			try {
+				value = field.get (NULL);
+			} catch (IllegalAccessException e) {
+				// nothing
+			}
+
+			if (value instanceof XQVariableType) {
+				typeMap.put (value.toString(), value);
+			}
+		}
+	}
+
 }
