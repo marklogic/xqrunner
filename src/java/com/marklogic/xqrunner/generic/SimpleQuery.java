@@ -26,11 +26,11 @@ import com.marklogic.xqrunner.XQuery;
  * Date: Aug 1, 2004
  * Time: 4:41:44 PM
  */
-public class SimpleQuery implements XQuery
+public class GenericQuery implements XQuery
 {
 	private String text;
 
-	public SimpleQuery (String text)
+	public GenericQuery (String text)
 	{
 		this.text = text;
 	}
