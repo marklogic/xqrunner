@@ -22,6 +22,7 @@
 
 <project name="xqrunner" default="all" basedir=".">
 
+	<property name="product.name" value="xqrunner"/>
 	<property name="release.version" value="0.5"/>
 
 	<!-- Static definitions of where things are relative to the root -->
@@ -39,19 +40,18 @@
 	<!-- Jar files that are under source control in this tree -->
 	<property name="jarlib" value="src/lib"/>
 	<property name="junit.jar" value="${jarlib}/junit.jar"/>
-	<property name="jedit.jar" value="${jarlib}/jedit.jar"/>
-	<property name="xqueryplugin.jar" value="${jarlib}/XQuery.jar"/>
 	<property name="xdbc.jar" value="${jarlib}/xdbc.jar"/>
 	<property name="xdmp.jar" value="${jarlib}/xdmp.jar"/>
 	<property name="jdom.jar" value="${jarlib}/jdom.jar"/>
 
 	<!-- Intermediate generated files -->
-	<property name="javadoc.zipfile" value="${generated.files}/MLAdapterJavadocs.zip"/>
+	<property name="javadoc.zipfile" value="${generated.files}/${product.name}-api.zip"/>
+	<property name="code.output.jar" value="${generated.files}/${product.name}.jar"/>
 
 	<!-- Products of this build -->
 	<property name="products" value="deliverable"/>
-	<property name="release.bundle" value="${products}/xqrunner-${release.version}.zip"/>
-	<property name="source.bundle" value="${products}/xqrunner-src-${release.version}.zip"/>
+	<property name="release.bundle" value="${products}/${product.name}-${release.version}.zip"/>
+	<property name="source.bundle" value="${products}/${product.name}-src-${release.version}.zip"/>
 
 	<!-- Configurable flags that will affect how targets run -->
 	<property name="compile.debug.symbols.flag" value="on"/>	<!-- on | off -->
@@ -78,20 +78,14 @@
 
 	<!-- ********************************************************** -->
 
-	<path id="plugin.compile.classpath">
+	<path id="code.compile.classpath">
 		<pathelement path="${xdbc.jar}"/>
 		<pathelement path="${xdmp.jar}"/>
 		<pathelement path="${jdom.jar}"/>
-		<pathelement path="${xqueryplugin.jar}"/>
-		<pathelement path="${jedit.jar}"/>
-		<pathelement path="${intellijforms.jar}"/>
-		<pathelement path="${indenter.jar}"/>
-		<pathelement path="${infoviewer.jar}"/>
-		<pathelement path="${errorlist.jar}"/>
 		<pathelement path="${compiled.classes.dir}"/>
 	</path>
 
-	<path id="plugin.testcases.classpath">
+	<path id="testcases.classpath">
 		<pathelement path="${junit.jar}"/>
 		<pathelement path="${compiled.classes.dir}"/>
 	</path>
@@ -100,23 +94,22 @@
 		<pathelement path="${compiled.classes.dir}"/>
 	</path>
 
-	<target name="compile.plugin" depends="init">
-		<javac classpathref="plugin.compile.classpath" srcdir="${java.source}"
+	<target name="compile.code" depends="init">
+		<javac classpathref="code.compile.classpath" srcdir="${java.source}"
 			destdir="${compiled.classes.dir}" deprecation="on"
 			debug="${compile.debug.symbols.flag}" />
 	</target>
 
-	<target name="compile.plugin.tests" depends="compile.plugin">
-		<javac classpathref="plugin.testcases.classpath" srcdir="${junit.source}"
+	<target name="compile.tests" depends="compile.code">
+		<javac classpathref="testcases.classpath" srcdir="${junit.source}"
 			destdir="${compiled.classes.dir}" deprecation="on"
 			debug="${compile.debug.symbols.flag}" />
 	</target>
 
-	<target name="test.plugin" depends="compile.plugin.tests"
-		unless="junit.disabled" >
+	<target name="test.code" depends="compile.tests" unless="junit.disabled" >
 
 		<junit printsummary="on" haltonerror="${junit.halt.on.error}" showoutput="true">
-			<classpath refid="plugin.testcases.classpath"/>
+			<classpath refid="testcases.classpath"/>
 				<formatter type="plain" usefile="false"/>
 
 				<batchtest fork="no">
@@ -125,41 +118,25 @@
 		</junit>
 	</target>
 
-	<target name="generate.adapter.jar" depends="test.plugin">
-		<jar jarfile="${adapter.output.jar}">
-			<!-- TODO: Filter classes -->
+	<target name="generate.code.jar" depends="test.code">
+		<jar jarfile="${code.output.jar}">
 			<fileset dir="${compiled.classes.dir}">
 				<exclude name="**/Test*.class"/>
 			</fileset>
 		</jar>
 	</target>
 
-	<target name="generate.plugin.jar" depends="test.plugin">
-		<jar jarfile="${plugin.output.jar}">
-			<fileset dir="${config.source}">
-				<include name="*.props"/>
-				<include name="*.xml"/>
-			</fileset>
-			<fileset dir="${compiled.classes.dir}">
-				<exclude name="**/Test*.class"/>
-				<exclude name="marklogicadapter/**"/>
-				<exclude name="com/marklogic/queryhelper/**"/>
-			</fileset>
-			<fileset dir="${images.source}"/>
-		</jar>
-	</target>
-
-	<target name="plugin" depends="generate.plugin.jar, generate.adapter.jar"/>
+	<target name="code" depends="generate.code.jar"/>
 
 	<!-- ********************************************************** -->
 
-	<target name="javadoc" depends="plugin">
+	<target name="javadoc" depends="code">
 		<mkdir dir="${javadoc.dir}"/>
 		<javadoc sourcepath="${java.source}" destdir="${javadoc.dir}" packagenames="*"
 			author="true" version="true" windowtitle="Mark Logic jEdit Plugin">
 
-			<classpath refid="plugin.compile.classpath"/>
-			<doctitle><![CDATA[<h1>Mark Logic jEdit XQuery Plugin</h1>]]></doctitle>
+			<classpath refid="code.compile.classpath"/>
+			<doctitle><![CDATA[<h1>Mark Logic XQRunner Library</h1>]]></doctitle>
 			<bottom><![CDATA[<i>Copyright &copy; 2004 Mark Logic Corporation, Licensed Under Apache 2.0</i>]]></bottom>
 		</javadoc>
 
@@ -168,12 +145,12 @@
 
 	<!-- ********************************************************** -->
 
-	<target name="binarybundle" depends="init,plugin,javadoc">
+	<target name="binarybundle" depends="init,code,javadoc">
 		<zip zipfile="${release.bundle}">
 			<fileset dir="${doc.source}">
 				<include name="*"/>
 			</fileset>
-			<fileset file="${adapter.output.jar}" />
+			<fileset file="${code.output.jar}" />
 			<fileset dir="${jarlib}">
 				<include name="xdbc.jar"/>
 				<include name="xdmp.jar"/>
@@ -194,6 +171,7 @@
 	<!-- ********************************************************** -->
 
 	<target name="all" depends="binarybundle,srcbundle">
+		<copy file="${code.output.jar}"  todir="${products}"/>
 		<copy file="${doc.source}/README.txt"  todir="${products}"/>
 	</target>
 
