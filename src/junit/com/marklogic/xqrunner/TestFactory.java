@@ -105,15 +105,12 @@ public class TestFactory extends TestCase
 
 	public void testURI() throws XQException, URISyntaxException
 	{
-//		XQFactory factory = new XQFactory();
 		String scheme = XQFactory.DEFAULT_PROVIDER_NAME;
 
 		checkBadUri (host + ":" + port);
 
-//		checkBadUri (factory, user + "@" + host + ":" + port);
 		checkBadUri (scheme + "://" + user + "@" + host + ":" + port);
 
-//		checkBadUri (factory, ":" + password + "@" + host + ":" + port);
 		checkBadUri (scheme + "://" + ":" + password + "@" + host + ":" + port);
 
 		checkBadUri ("xyzzy://" + ":" + password + "@" + host + ":" + port);
@@ -122,8 +119,6 @@ public class TestFactory extends TestCase
 
 		String sysProp = XQFactory.PROPERTY_PREFIX + "xyzzy";
 		System.setProperty (sysProp, XQFactory.XDBC_PROVIDER_CLASS);
-
-//		factory = new XQFactory ("xyzzy");
 
 		XQFactory.newDataSource (new URI ("xyzzy://" + user + ":" + password + "@" + host + ":" + port));
 	}
