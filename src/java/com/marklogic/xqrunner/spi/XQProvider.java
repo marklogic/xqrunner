@@ -16,7 +16,11 @@
  * The use of the Apache License does not indicate that this project is
  * affiliated with the Apache Software Foundation.
  */
-package com.marklogic.xqrunner;
+package com.marklogic.xqrunner.spi;
+
+import com.marklogic.xqrunner.XQDataSource;
+import com.marklogic.xqrunner.XQException;
+import com.marklogic.xqrunner.XQRunner;
 
 /**
  * Created by IntelliJ IDEA.

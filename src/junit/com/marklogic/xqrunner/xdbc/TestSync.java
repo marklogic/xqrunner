@@ -23,6 +23,7 @@ import com.marklogic.xqrunner.XQRunner;
 import com.marklogic.xqrunner.XQDataSource;
 import com.marklogic.xqrunner.XQException;
 import com.marklogic.xqrunner.XQResult;
+import com.marklogic.xqrunner.XQRunnerFactory;
 import com.marklogic.xqrunner.generic.SimpleQuery;
 
 /**
@@ -34,23 +35,25 @@ import com.marklogic.xqrunner.generic.SimpleQuery;
 public class TestSync extends TestCase
 {
 	XQDataSource dataSource = null;
+	XQRunner runner = null;
 
 	protected void setUp () throws Exception
 	{
 		super.setUp ();
+
+		XQRunnerFactory factory = new XQRunnerFactory();
 
 		String host = System.getProperty ("xqhost");
 		int port = Integer.parseInt (System.getProperty ("xqport"));
 		String user = System.getProperty ("xquser");
 		String password = System.getProperty ("xqpw");
 
-		dataSource = new XdbcDataSource (host, port, user, password);
+		dataSource = factory.newDataSource ("xdbc", host, port, user, password);
+		runner = factory.newSyncRunner ("xdbc", dataSource);
 	}
 
 	public void testSyncRun() throws XQException
 	{
-		XQRunner runner = new XdbcSyncRunner (dataSource);
-
 		try {
 			runner.abortQuery ();
 			fail ("abort should fail if no query active");

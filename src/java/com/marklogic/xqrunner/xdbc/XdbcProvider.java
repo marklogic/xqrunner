@@ -18,10 +18,10 @@
  */
 package com.marklogic.xqrunner.xdbc;
 
-import com.marklogic.xqrunner.XQProvider;
 import com.marklogic.xqrunner.XQDataSource;
-import com.marklogic.xqrunner.XQRunner;
 import com.marklogic.xqrunner.XQException;
+import com.marklogic.xqrunner.XQRunner;
+import com.marklogic.xqrunner.spi.XQProvider;
 
 /**
  * Created by IntelliJ IDEA.

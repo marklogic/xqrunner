@@ -18,6 +18,8 @@
  */
 package com.marklogic.xqrunner;
 
+import com.marklogic.xqrunner.spi.XQProvider;
+
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -31,29 +33,33 @@ import java.util.Properties;
  */
 public class XQRunnerFactory
 {
-	private static final String PROPERTY_PREFIX = "xqrunner.provider.";
-	private static final String DEFAULT_PROVIDER_NAME = "xdbc";
-	private static final String DEFAULT_PROVIDER_CLASS =
+	public static final String DEFAULT_PROVIDER_NAME = "xdbc";
+	public static final String DEFAULT_PROVIDER_CLASS =
 		"com.marklogic.xqrunner.xdbc.XdbcProvider";
+	public static final String PROPERTY_PREFIX = "xqrunner.provider.";
 
-	private static Map providers = null;
+	private Map providers = null;
 
-	private XQProvider provider;
-
-	public XQRunnerFactory (String providerName)
+	public XQRunnerFactory()
 	{
-		initProvidersIfNeeded();
-
-		provider = (XQProvider) providers.get (providerName);
+		providers = initProviderMap();
 	}
 
-	private static synchronized void initProvidersIfNeeded()
+	protected XQProvider getProvider (String providerName)
 	{
-		if (providers == null) {
-			return;
+		XQProvider provider = (XQProvider) providers.get (providerName);
+
+		if (provider == null) {
+			throw new UnsupportedOperationException (
+				"No provider '" + providerName + "' configured");
 		}
 
-		providers = new HashMap();
+		return (provider);
+	}
+
+	private Map initProviderMap()
+	{
+		Map map = new HashMap();
 
 		Properties properties = System.getProperties();
 
@@ -62,41 +68,43 @@ public class XQRunnerFactory
 			String value = properties.getProperty (key);
 
 			if (key.startsWith (PROPERTY_PREFIX)) {
-				addProvider (providers, key.substring (PROPERTY_PREFIX.length()), value);
+				addProvider (map, key.substring (PROPERTY_PREFIX.length()), value);
 			}
 		}
 
-		if (providers.size() == 0) {
-			addProvider (providers, DEFAULT_PROVIDER_NAME, DEFAULT_PROVIDER_CLASS);
+		if (map.size() == 0) {
+			addProvider (map, DEFAULT_PROVIDER_NAME, DEFAULT_PROVIDER_CLASS);
 		}
+
+		return (map);
 	}
 
-	private static void addProvider (Map map, String key, String className)
+	private void addProvider (Map map, String key, String className)
 	{
 		try {
 			Class clazz = Class.forName (className);
 			XQProvider provider = (XQProvider) clazz.newInstance();
 
-			map.put (key.substring (PROPERTY_PREFIX.length()), provider);
+			map.put (key, provider);
 		} catch (Exception e) {
 			// problem, do nothing
 		}
 	}
 
-	public XQDataSource newDataSource (String host, int port, String user, String password)
+	public XQDataSource newDataSource (String providerName, String host, int port, String user, String password)
 		throws XQException
 	{
-		return (provider.newDataSource (host, port, user, password));
+		return (getProvider (providerName).newDataSource (host, port, user, password));
 	}
 
-	public XQDataSource newDataSource (String key, String user, String password)
+	public XQDataSource newDataSource (String providerName, String key, String user, String password)
 		throws XQException
 	{
-		return (provider.newDataSource (key, user, password));
+		return (getProvider (providerName).newDataSource (key, user, password));
 	}
 
-	public XQRunner newSyncRunner (XQDataSource dataSource)
+	public XQRunner newSyncRunner (String providerName, XQDataSource dataSource)
 	{
-		return (provider.newSyncRunner (dataSource));
+		return (getProvider (providerName).newSyncRunner (dataSource));
 	}
 }
