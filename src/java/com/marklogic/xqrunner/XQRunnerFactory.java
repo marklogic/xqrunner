@@ -22,89 +22,122 @@ import com.marklogic.xqrunner.spi.XQProvider;
 
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Properties;
 
 /**
- * Created by IntelliJ IDEA.
- * User: ron
- * Date: Sep 29, 2004
- * Time: 5:40:09 PM
+ * <p>Use this class to obtain instances of XQDataSource and XQRunner.
+ * Each instance of this class is bound to a specific provider (XDBC, XQJ, etc).</p>
+ *
+ * <p>The no-arg constructor creates an instance that uses the default provider.
+ * If the system property "com.marklogic.xqrunner.spi.XQProvider" is set
+ * its value is the fully qualified name of an XQProvider implementation to
+ * use.  If the property is not set, a compile-time default is used.</p>
+ *
+ * <p>The constructor that takes a String argument names a provider to use.
+ * If a system property named "xqrunner.provider.<i>name</i>" is set its value
+ * is the fully qualified name of an XQProvider implementation to use.  If no
+ * property is set, the provider name is looked up in a list of compile-time
+ * default providers.  If the name is not found in either lookup, an
+ * exception is thrown.
+ * As of this writing, the only default provider is XDBC.</p>
+ *
+ * @author Ron Hitchens
+ * @see com.marklogic.xqrunner.spi.XQProvider
  */
-public class XQRunnerFactory
+public class XQFactory
 {
-	public static final String DEFAULT_PROVIDER_NAME = "xdbc";
-	public static final String DEFAULT_PROVIDER_CLASS =
-		"com.marklogic.xqrunner.xdbc.XdbcProvider";
 	public static final String PROPERTY_PREFIX = "xqrunner.provider.";
 
-	private Map providers = null;
+	public static final String XDBC_PROVIDER_NAME = "xdbc";
+	public static final String XDBC_PROVIDER_CLASS =
+		"com.marklogic.xqrunner.xdbc.XdbcProvider";
 
-	public XQRunnerFactory()
+	public static final String DEFAULT_PROVIDER_CLASS = XDBC_PROVIDER_CLASS;
+
+	private static Map defaultProviders = null;
+
+	private XQProvider provider = null;
+
+	// -----------------------------------------------------------------
+
+	/**
+	 * Construct a factory using the default provider.
+	 *
+	 * @throws XQException Thrown if the default XQProvider implementation
+	 *  cannot be instantiated.
+	 */
+	public XQFactory()
+		throws XQException
 	{
-		providers = initProviderMap();
+		String className = System.getProperty (XQProvider.class.getName());
+
+		if (className == null) {
+			className = DEFAULT_PROVIDER_CLASS;
+		}
+
+		provider = loadProvider (className);
 	}
 
-	protected XQProvider getProvider (String providerName)
+	/**
+	 * Construct a factory for the named provider.
+	 *
+	 * @param providerName The name of the provider to use for this factory.
+	 * @throws XQException Thrown if the default XQProvider implementation
+	 *  cannot be instantiated.
+	 */
+	public XQFactory (String providerName)
+		throws XQException
 	{
-		XQProvider provider = (XQProvider) providers.get (providerName);
+		String className = System.getProperty (PROPERTY_PREFIX + providerName);
 
-		if (provider == null) {
+		if (className == null) {
+			className = (String) defaultProviders.get (providerName);
+		}
+
+		if (className == null) {
 			throw new UnsupportedOperationException (
-				"No provider '" + providerName + "' configured");
+				"No provider named '" + providerName + "' configured");
 		}
 
-		return (provider);
+		provider = loadProvider (className);
 	}
 
-	private Map initProviderMap()
+	// -----------------------------------------------------------------
+
+	public XQDataSource newDataSource (String host, int port,
+		String user, String password)
+		throws XQException
 	{
-		Map map = new HashMap();
-
-		Properties properties = System.getProperties();
-
-		for (Iterator it = properties.keySet().iterator(); it.hasNext();) {
-			String key = (String) it.next ();
-			String value = properties.getProperty (key);
-
-			if (key.startsWith (PROPERTY_PREFIX)) {
-				addProvider (map, key.substring (PROPERTY_PREFIX.length()), value);
-			}
-		}
-
-		if (map.size() == 0) {
-			addProvider (map, DEFAULT_PROVIDER_NAME, DEFAULT_PROVIDER_CLASS);
-		}
-
-		return (map);
+		return (provider.newDataSource (host, port, user, password));
 	}
 
-	private void addProvider (Map map, String key, String className)
+	public XQDataSource newDataSource (String key, String user, String password)
+		throws XQException
+	{
+		return (provider.newDataSource (key, user, password));
+	}
+
+	public XQRunner newSyncRunner (XQDataSource dataSource)
+	{
+		return (provider.newSyncRunner (dataSource));
+	}
+
+	// -----------------------------------------------------------------
+
+	private XQProvider loadProvider (String className)
+		throws XQException
 	{
 		try {
 			Class clazz = Class.forName (className);
-			XQProvider provider = (XQProvider) clazz.newInstance();
 
-			map.put (key, provider);
+			return ((XQProvider) clazz.newInstance());
 		} catch (Exception e) {
-			// problem, do nothing
+			throw new XQException (e.getMessage(), e);
 		}
 	}
 
-	public XQDataSource newDataSource (String providerName, String host, int port, String user, String password)
-		throws XQException
-	{
-		return (getProvider (providerName).newDataSource (host, port, user, password));
-	}
+	static {
+		defaultProviders = new HashMap();
 
-	public XQDataSource newDataSource (String providerName, String key, String user, String password)
-		throws XQException
-	{
-		return (getProvider (providerName).newDataSource (key, user, password));
-	}
-
-	public XQRunner newSyncRunner (String providerName, XQDataSource dataSource)
-	{
-		return (getProvider (providerName).newSyncRunner (dataSource));
+		defaultProviders.put (XDBC_PROVIDER_NAME, XDBC_PROVIDER_CLASS);
 	}
 }
