@@ -26,6 +26,10 @@ import com.marklogic.xdbc.XDBCXName;
 import com.marklogic.xdbc.XDBCResultSequence;
 import com.marklogic.xdmp.XDMPDataSource;
 
+import java.io.Reader;
+import java.io.StringWriter;
+import java.io.IOException;
+
 /**
  * Created by IntelliJ IDEA.
  * User: ron
@@ -49,8 +53,7 @@ public class TestXdbc extends TestCase
 		connection = datasource.getConnection (user, password);
 	}
 
-	// FIXME: Disabled for now, needs XDBC lib fix
-	public void XXXtestExtvarNoNamespace() throws XDBCException
+	public void testExtvarNoNamespace() throws XDBCException
 	{
 		XDBCStatement statement = connection.createStatement();
 
@@ -58,13 +61,9 @@ public class TestXdbc extends TestCase
 
 		XDBCResultSequence resultSequence = null;
 
-		try {
-			resultSequence = statement.executeQuery (
-				"define variable $extvar external\n" +
-				"concat (\"var: \", $extvar)");
-		} catch (XDBCException e) {
-			e.getCause().printStackTrace();
-		}
+		resultSequence = statement.executeQuery (
+			"define variable $extvar external\n" +
+			"concat (\"var: \", $extvar)");
 
 		resultSequence.next ();
 
@@ -79,13 +78,9 @@ public class TestXdbc extends TestCase
 
 		XDBCResultSequence resultSequence = null;
 
-		try {
-			resultSequence = statement.executeQuery (
-				"define variable $extvar external\n" +
-				"concat (\"var: \", $extvar)");
-		} catch (XDBCException e) {
-			e.getCause().printStackTrace();
-		}
+		resultSequence = statement.executeQuery (
+			"define variable $extvar external\n" +
+			"concat (\"var: \", $extvar)");
 
 		resultSequence.next ();
 
@@ -100,17 +95,65 @@ public class TestXdbc extends TestCase
 
 		XDBCResultSequence resultSequence = null;
 
-		try {
-			resultSequence = statement.executeQuery (
-				"declare namespace foo=\"foobar\"\n" +
-				"define variable $foo:extvar external\n" +
-				"concat (\"var: \", $foo:extvar)");
-		} catch (XDBCException e) {
-			e.getCause().printStackTrace();
-		}
+		resultSequence = statement.executeQuery (
+			"declare namespace foo=\"foobar\"\n" +
+			"define variable $foo:extvar external\n" +
+			"concat (\"var: \", $foo:extvar)");
 
 		resultSequence.next ();
 
 		assertEquals ("var: thevalue", resultSequence.get_String ());
+	}
+
+	public void testStringGetReader() throws XDBCException, IOException
+	{
+		XDBCStatement statement = connection.createStatement();
+		XDBCResultSequence resultSequence = statement.executeQuery ("\"this is a string\"");
+
+		resultSequence.next();
+
+		Reader reader = resultSequence.getReader();
+
+		assertNull (reader);
+		
+//		assertNotNull (reader);
+//
+//		StringWriter stringWriter = new StringWriter();
+//		char [] buffer = new char [100];
+//		int rc;
+//
+//		while ((rc = reader.read (buffer)) >= 0) {
+//			stringWriter.write (buffer, 0, rc);
+//		}
+//
+//		reader.close();
+//
+//		assertEquals ("this is a string", stringWriter.toString());
+	}
+
+	private static final String nodeString = "<blech>this is a string</blech>";
+
+	public void testNodeGetReader() throws XDBCException, IOException
+	{
+		XDBCStatement statement = connection.createStatement();
+		XDBCResultSequence resultSequence = statement.executeQuery (nodeString);
+
+		resultSequence.next();
+
+		Reader reader = resultSequence.getReader();
+
+		assertNotNull (reader);
+
+		StringWriter stringWriter = new StringWriter();
+		char [] buffer = new char [100];
+		int rc;
+
+		while ((rc = reader.read (buffer)) >= 0) {
+			stringWriter.write (buffer, 0, rc);
+		}
+
+		reader.close();
+
+		assertEquals (nodeString, stringWriter.toString());
 	}
 }

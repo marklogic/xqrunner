@@ -16,23 +16,15 @@
  * The use of the Apache License does not indicate that this project is
  * affiliated with the Apache Software Foundation.
  */
-package com.marklogic.xqrunner.xdbc;
+package com.marklogic.xqrunner;
 
 import junit.framework.TestCase;
-import com.marklogic.xqrunner.XQDataSource;
-import com.marklogic.xqrunner.XQRunner;
-import com.marklogic.xqrunner.XQFactory;
-import com.marklogic.xqrunner.XQResult;
-import com.marklogic.xqrunner.XQException;
-import com.marklogic.xqrunner.XQuery;
-import com.marklogic.xqrunner.XQVariableType;
-import com.marklogic.xqrunner.XQVariable;
 
-import java.util.Date;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.math.BigInteger;
-import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * Created by IntelliJ IDEA.
@@ -86,7 +78,7 @@ public class TestVars extends TestCase
 		assertEquals ("var: thevalue", result.asString ());
 	}
 
-	public void testStringWithNamesapceParam() throws XQException
+	public void testStringWithNamespaceParam() throws XQException
 	{
 		XQuery query = dataSource.newQuery (
 			"declare namespace foo=\"foobar\"\n" +

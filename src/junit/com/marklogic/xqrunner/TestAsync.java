@@ -16,16 +16,9 @@
  * The use of the Apache License does not indicate that this project is
  * affiliated with the Apache Software Foundation.
  */
-package com.marklogic.xqrunner.xdbc;
+package com.marklogic.xqrunner;
 
 import junit.framework.TestCase;
-import com.marklogic.xqrunner.XQDataSource;
-import com.marklogic.xqrunner.XQRunner;
-import com.marklogic.xqrunner.XQFactory;
-import com.marklogic.xqrunner.XQException;
-import com.marklogic.xqrunner.XQAsyncRunner;
-import com.marklogic.xqrunner.XQProgressListener;
-import com.marklogic.xqrunner.XQResult;
 
 /**
  * Created by IntelliJ IDEA.
@@ -348,22 +341,22 @@ public class TestAsync extends TestCase
 		private volatile boolean aborted = false;
 		private volatile boolean failed = false;
 
-		public void queryStarted (XQRunner runner, Object attachment)
+		public void queryStarted (XQAsyncRunner runner, Object attachment)
 		{
 			started = true;
 		}
 
-		public void queryFinished (XQRunner runner, XQResult result, Object attachment)
+		public void queryFinished (XQAsyncRunner runner, XQResult result, Object attachment)
 		{
 			finished = true;
 		}
 
-		public void queryAborted (XQRunner runner, Object attachment)
+		public void queryAborted (XQAsyncRunner runner, Object attachment)
 		{
 			aborted = true;
 		}
 
-		public void queryFailed (XQRunner runner, Throwable throwable, Object attachment)
+		public void queryFailed (XQAsyncRunner runner, Throwable throwable, Object attachment)
 		{
 			failed = true;
 		}

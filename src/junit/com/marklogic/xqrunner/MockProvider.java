@@ -16,20 +16,11 @@
  * The use of the Apache License does not indicate that this project is
  * affiliated with the Apache Software Foundation.
  */
-package com.marklogic.xqrunner.xdbc;
+package com.marklogic.xqrunner;
 
-import com.marklogic.xqrunner.spi.XQProvider;
-import com.marklogic.xqrunner.XQDataSource;
-import com.marklogic.xqrunner.XQException;
-import com.marklogic.xqrunner.XQRunner;
-import com.marklogic.xqrunner.XQuery;
-import com.marklogic.xqrunner.XQResult;
-import com.marklogic.xqrunner.XQVariable;
-import com.marklogic.xqrunner.XQVariableType;
-import com.marklogic.xqrunner.XQAsyncRunner;
-import com.marklogic.xqrunner.XQDuration;
-import com.marklogic.xqrunner.generic.GenericQuery;
 import com.marklogic.xqrunner.generic.AsyncRunner;
+import com.marklogic.xqrunner.generic.GenericQuery;
+import com.marklogic.xqrunner.spi.XQProvider;
 
 
 /**
@@ -88,7 +79,7 @@ public class MockProvider implements XQProvider
 			return (new MockRunner());
 		}
 
-		public XQRunner newAsyncRunner()
+		public XQAsyncRunner newAsyncRunner()
 		{
 			return (new AsyncRunner (newSyncRunner()));
 		}
@@ -105,57 +96,57 @@ public class MockProvider implements XQProvider
 
 		public XQVariable newVariable (String namespace, String localname, XQVariableType type, Object value)
 		{
-			return null;  // FIXME: auto-generated
+			return null;
 		}
 
 		public XQVariable newVariable (String localname, XQVariableType type, Object value)
 		{
-			return null;  // FIXME: auto-generated
+			return null;
 		}
 
 		public XQVariable newVariable (String namespace, String localname, XQVariableType type, long value)
 		{
-			return null;  // FIXME: auto-generated
+			return null;
 		}
 
 		public XQVariable newVariable (String localname, XQVariableType type, long value)
 		{
-			return null;  // FIXME: auto-generated
+			return null;
 		}
 
 		public XQVariable newVariable (String namespace, String localname, XQVariableType type, double value)
 		{
-			return null;  // FIXME: auto-generated
+			return null;
 		}
 
 		public XQVariable newVariable (String localname, XQVariableType type, double value)
 		{
-			return null;  // FIXME: auto-generated
+			return null;
 		}
 
 		public XQVariable newVariable (String namespace, String localname, boolean value)
 		{
-			return null;  // FIXME: auto-generated
+			return null;
 		}
 
 		public XQVariable newVariable (String localname, boolean value)
 		{
-			return null;  // FIXME: auto-generated
+			return null;
 		}
 
 		public XQDuration newDuration (int years, int months, int days, int hours, int minutes, int seconds, double subseconds)
 		{
-			return null;  // FIXME: auto-generated
+			return null;
 		}
 
 		public XQDuration newDuration (boolean positive, int years, int months, int days, int hours, int minutes, int seconds, double subseconds)
 		{
-			return null;  // FIXME: auto-generated
+			return null;
 		}
 
 		public XQDuration newDuration (String value)
 		{
-			return null;  // FIXME: auto-generated
+			return null;
 		}
 	}
 
@@ -195,6 +186,11 @@ public class MockProvider implements XQProvider
 			return (null);
 		}
 
+		public XQResult runQueryStreaming (XQuery query) throws XQException
+		{
+			return (runQuery (query));
+		}
+
 		public void abortQuery()
 		{
 			if (sleeper == null) {
@@ -204,6 +200,11 @@ public class MockProvider implements XQProvider
 			run = false;
 			aborted = true;
 			sleeper.interrupt();
+		}
+
+		public void insertDocument (String uri, XQDocumentWrapper documentWrapper, XQDocumentMetaData metaData)
+		{
+			throw new UnsupportedOperationException ("not yet implemented");
 		}
 
 		// ---------------------------------------
