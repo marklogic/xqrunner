@@ -199,7 +199,7 @@ class XdbcResultItem implements XQResultItem
 	}
 
 	/**
-	 * Writer the String representation of this item to the
+	 * Write the String representation of this item to the
 	 * provided Writer
 	 * @param writer The Writer to send the value to
 	 * @throws IOException If there is a problem writing.
@@ -323,7 +323,7 @@ class XdbcResultItem implements XQResultItem
 		throws XQException
 	{
 		if (isNode() == false) {
-			throw new XQException ("Result is not a node");
+			throw new XQException ("Result item is not a node");
 		}
 
 		try {
@@ -339,7 +339,7 @@ class XdbcResultItem implements XQResultItem
 		throws XQException
 	{
 		if (isNode() == false) {
-			throw new XQException ("Result is not a node");
+			throw new XQException ("Result item is not a node");
 		}
 
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance ();
@@ -506,7 +506,7 @@ class XdbcResultItem implements XQResultItem
 			return (xdbcResultSequence.getDecimal().asBigDecimal());
 
 		case XDBCResultSequence.XDBC_Integer:
-			return (xdbcResultSequence.getInteger().asInteger());
+			return (xdbcResultSequence.getInteger().asBigInteger());
 
 		// String-ish types
 		case XDBCResultSequence.XDBC_String:
