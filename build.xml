@@ -136,7 +136,7 @@
 	<target name="javadoc" depends="code">
 		<mkdir dir="${javadoc.dir}"/>
 		<javadoc sourcepath="${java.source}" destdir="${javadoc.dir}" packagenames="*"
-			author="true" version="true" windowtitle="Mark Logic jEdit Plugin">
+			author="true" version="true" windowtitle="MarkLogic XQRunner">
 
 			<classpath refid="code.compile.classpath"/>
 			<doctitle><![CDATA[<h1>Mark Logic XQRunner Library</h1>]]></doctitle>
