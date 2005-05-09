@@ -13,6 +13,9 @@ be deleted after the build.
 content of the deliverable directory) which you can use
 without doing a build.
 
+   The Javadoc API documentation is included in the
+binary distribution zip file as xqrunner-api.zip.
+
 Version 0.6.0
 	Initial release
 	Javadoc comments not finished yet.
