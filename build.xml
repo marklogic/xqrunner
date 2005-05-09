@@ -159,6 +159,7 @@
 				<include name="xdmp.jar"/>
 				<include name="jdom.jar"/>
 			</fileset>
+			<fileset file="${javadoc.zipfile}" />
 		</zip>
 	</target>
 
