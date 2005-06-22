@@ -25,12 +25,12 @@ import java.util.HashMap;
 import java.net.URI;
 
 /**
- * <p>Use this class to obtain instances of XQDataSource and XQRunner.
+ * <p>Use this class to obtain instances of XQDataSource.
  * Each instance of this class is bound to a specific provider (XDBC, XQJ, etc).</p>
  *
  * <p>The no-arg constructor creates an instance that uses the default provider.
  * If the system property "com.marklogic.xqrunner.spi.XQProvider" is set
- * its value is the fully qualified name of an XQProvider implementation to
+ * its value is the fully qualified name of an XQProvider implementation class to
  * use.  If the property is not set, a compile-time default is used.</p>
  *
  * <p>The constructor that takes a String argument names a provider to use.
@@ -176,7 +176,7 @@ public class XQFactory
 
 			return ((XQProvider) clazz.newInstance());
 		} catch (Exception e) {
-			throw new XQException (e.getMessage(), e);
+			throw new XQException ("Could not load provider '" + className + "': " + e, e);
 		}
 	}
 

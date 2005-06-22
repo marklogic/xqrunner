@@ -16,10 +16,10 @@ without doing a build.
    The Javadoc API documentation is included in the
 binary distribution zip file as xqrunner-api.zip.
 
-Version 0.6.0
-	Initial release
-	Javadoc comments not finished yet.
-	Need some good examples
+Version 0.7.1
+	Update bundled xdbc jars to 2.2-8, which
+	will talk to 3.0 servers.
+	Tweak provider not found exception text
 
 Version 0.7.0
 	Added external variables (parameters) on queries
@@ -27,5 +27,10 @@ Version 0.7.0
 	Document insert
 	More junit tests
 	Misc fixes and robustitude
+
+Version 0.6.0
+	Initial release
+	Javadoc comments not finished yet.
+	Need some good examples
 
 Rh 11/12/2004
