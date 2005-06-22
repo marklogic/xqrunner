@@ -16,12 +16,12 @@ without doing a build.
    The Javadoc API documentation is included in the
 binary distribution zip file as xqrunner-api.zip.
 
-Version 0.7.1
+Version 0.7.1 (6/22/2005)
 	Update bundled xdbc jars to 2.2-8, which
 	will talk to 3.0 servers.
 	Tweak provider not found exception text
 
-Version 0.7.0
+Version 0.7.0 (11/12/2004)
 	Added external variables (parameters) on queries
 	Streaming mode for large results
 	Document insert
@@ -33,4 +33,3 @@ Version 0.6.0
 	Javadoc comments not finished yet.
 	Need some good examples
 
-Rh 11/12/2004
