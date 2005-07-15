@@ -16,6 +16,10 @@ without doing a build.
    The Javadoc API documentation is included in the
 binary distribution zip file as xqrunner-api.zip.
 
+Version 0.7.2 (7/15/2005)
+	Return BigInteger instance rather than Integer for xs:integer
+	Updated junit tests 
+
 Version 0.7.1 (6/22/2005)
 	Update bundled xdbc jars to 2.2-8, which
 	will talk to 3.0 servers.
