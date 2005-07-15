@@ -21,6 +21,7 @@ package com.marklogic.xqrunner;
 import junit.framework.TestCase;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 
 /**
  * Created by IntelliJ IDEA.
@@ -35,7 +36,7 @@ public class TestHelper extends TestCase
 
 	protected void setUp () throws Exception
 	{
-		super.setUp ();
+		super.setUp();
 
 		dataSource = TestServerConfig.getDataSource();
 		runner = TestServerConfig.getRunner();
@@ -168,7 +169,7 @@ public class TestHelper extends TestCase
 		}
 
 		assertEquals (12.75, XQHelper.executeFloat (runner, dataSource.newQuery ("xs:float(12.75)")), 0.0);
-		assertEquals (23232.25, XQHelper.executeFloat (runner, dataSource.newQuery ("(xs:float(23232.25), <floob>xx</floob>)")), 0.0);
+		assertEquals (23232.25, XQHelper.executeFloat (runner, dataSource.newQuery ("(xs:float(23232.25), <floob>xx</floob>)")), 0.5);
 	}
 
 	public void testDouble() throws XQException
@@ -265,6 +266,10 @@ public class TestHelper extends TestCase
 		assertTrue (object instanceof BigDecimal);
 		assertEquals (new BigDecimal ("123.56"), object);
 
+		object = XQHelper.executeObject (runner, dataSource.newQuery ("12345678901234567"));
+		assertTrue (object instanceof BigInteger);
+		assertEquals (new BigInteger ("12345678901234567"), object);
+
 		object = XQHelper.executeObject (runner, dataSource.newQuery ("xs:double(123.56)"));
 		assertTrue (object instanceof Double);
 		assertEquals (new Double (123.56), object);
@@ -283,7 +288,7 @@ public class TestHelper extends TestCase
 
 	public void testObjects() throws XQException
 	{
-		Object [] expected = { new Integer(12), new BigDecimal ("1234.56"), "foo", null, "blah://foo/blech" };
+		Object [] expected = { new BigInteger ("12"), new BigDecimal ("1234.56"), "foo", null, "blah://foo/blech" };
 		Object [] result = XQHelper.executeObjects (runner, dataSource.newQuery ("(12, 1234.56, \"foo\", <foo></foo>, xs:anyURI(\"blah://foo/blech\"))"));
 
 		for (int i = 0; i < expected.length; i++) {

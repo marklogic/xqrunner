@@ -21,6 +21,7 @@ package com.marklogic.xqrunner;
 import org.w3c.dom.Document;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 
 /**
  * Created by IntelliJ IDEA.
@@ -104,7 +105,7 @@ public class XQHelper
 	{
 		XQResultItem item = getTypedItem0 (runner, query, XQVariableType.XS_INTEGER);
 
-		return (((Integer) item.asObject()).intValue());
+		return (((BigInteger) item.asObject()).intValue());
 	}
 
 	public static float executeFloat (XQRunner runner, XQuery query)
