@@ -79,34 +79,34 @@ class XdbcResult implements XQResult
 
 	public void release()
 	{
-		if ( ! streaming) {
-			XDBCStatement statement = null;
-			XDBCConnection connection = null;
+		XDBCStatement statement = null;
+		XDBCConnection connection = null;
 
-			if (xdbcResultSequence != null) {
-				try {
-					statement = xdbcResultSequence.getStatement();
-					xdbcResultSequence.close();
-				} catch (XDBCException e) {
-					// nothing
-				} finally {
-					xdbcResultSequence = null;
-				}
+		if (xdbcResultSequence != null) {
+			try {
+				statement = xdbcResultSequence.getStatement();
+				xdbcResultSequence.close();
+			} catch (XDBCException e) {
+				// nothing
+			} finally {
+				xdbcResultSequence = null;
 			}
-			if (statement != null) {
-				try {
-					connection = statement.getConnection();
-					statement.close();
-				} catch (XDBCException e) {
-					// nothing
-				}
+		}
+
+		if (statement != null) {
+			try {
+				connection = statement.getConnection();
+				statement.close ();
+			} catch (XDBCException e) {
+				// nothing
 			}
-			if (connection != null) {
-				try {
-					connection.close();
-				} catch (XDBCException e1) {
-					// nothing
-				}
+		}
+
+		if (connection != null) {
+			try {
+				connection.close();
+			} catch (XDBCException e1) {
+				// nothing
 			}
 		}
 	}
@@ -190,6 +190,7 @@ class XdbcResult implements XQResult
 				return (new XdbcResultItem (xdbcResultSequence, index, true));
 			} else {
 				release();
+
 				return (null);
 			}
 		} catch (XDBCException e) {

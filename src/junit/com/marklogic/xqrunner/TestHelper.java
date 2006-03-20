@@ -209,7 +209,7 @@ public class TestHelper extends TestCase
 		}
 
 		assertEquals (13468532622.75, XQHelper.executeDecimal (runner, dataSource.newQuery ("13468532622.75")), 0.0);
-		assertEquals (237767898232.25, XQHelper.executeDecimal (runner, dataSource.newQuery ("237767898232.25, <floob>xx</floob>)")), 0.0);
+		assertEquals (237767898232.25, XQHelper.executeDecimal (runner, dataSource.newQuery ("(237767898232.25, <floob>xx</floob>)")), 0.0);
 	}
 
 	public void testAtomic() throws XQException

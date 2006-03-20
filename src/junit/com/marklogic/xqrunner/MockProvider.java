@@ -62,7 +62,7 @@ public class MockProvider implements XQProvider
 
 	// ---------------------------------------------------------
 
-	private class MockDataSource implements XQDataSource
+	private static class MockDataSource implements XQDataSource
 	{
 		public Object getConnection () throws XQException
 		{
@@ -156,8 +156,8 @@ public class MockProvider implements XQProvider
 	{
 		private volatile long delay = 5000;
 		private volatile boolean aborted = false;
-		private volatile boolean throwException = false;
 		private volatile boolean run = true;
+		private volatile boolean throwException = false;
 		private volatile Thread sleeper = null;
 
 		public XQResult runQuery (XQuery query) throws XQException

@@ -267,4 +267,21 @@ public class TestSync extends TestCase
 
 		assertEquals (docValue + "\n", result.asString ());
 	}
+
+	public void testRSLeak() throws XQException
+	{
+		int COUNT = 1000;
+
+		for (int i = 0; i < COUNT; i++) {
+			String qvalue = "Hello World #" + i;
+			String query = "\"" + qvalue + "\"";
+			XQResult result;
+
+			result = runner.runQuery (dataSource.newQuery (query));
+			assertEquals (qvalue, result.asString());
+
+			result = runner.runQueryStreaming (dataSource.newQuery (query));
+			assertEquals (qvalue, result.asString());
+		}
+	}
 }

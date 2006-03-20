@@ -30,6 +30,7 @@ import java.util.regex.Pattern;
  *     namespace is optional, default is ""<br>
  *     Entire variable declaration must be one argument, quote if needed.
  * @author Ron Hitchens, Mark Logic
+ * @noinspection UseOfSystemOutOrSystemErr
  */
 public class XQRun
 {
@@ -61,7 +62,7 @@ public class XQRun
 		String queryText = args.findAndConsumeNamedArg ("-q");
 		String moduleName = args.findAndConsumeNamedArg ("-i");
 
-		if (queryText == null) {
+		if ((queryText == null) && (moduleName == null)) {
 			String fileName = args.findAndConsumeNamedArg ("-f");
 			queryText = AppHelper.loadStringFromFile (fileName, "\n");
 
@@ -71,7 +72,7 @@ public class XQRun
 		}
 
 		if ((queryText == null) && (moduleName != null)) {
-			queryText = moduleName;
+//			queryText = moduleName;
 
 			// TODO: Not finished
 			throw new Exception ("Module invoke not yet supported");
@@ -118,7 +119,7 @@ public class XQRun
 	{
 		Matcher matcher = varPattern.matcher (arg);
 
-		if (matcher.matches() == false) {
+		if ( ! matcher.matches()) {
 			return (null);
 		}
 

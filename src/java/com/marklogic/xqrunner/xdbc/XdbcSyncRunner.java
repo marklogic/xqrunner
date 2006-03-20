@@ -23,22 +23,22 @@ import com.marklogic.xdbc.XDBCException;
 import com.marklogic.xdbc.XDBCResultSequence;
 import com.marklogic.xdbc.XDBCStatement;
 import com.marklogic.xdbc.XDBCXName;
+import com.marklogic.xdmp.XDMPDocInsertStream;
+import com.marklogic.xqrunner.XQDocumentMetaData;
+import com.marklogic.xqrunner.XQDocumentWrapper;
 import com.marklogic.xqrunner.XQException;
 import com.marklogic.xqrunner.XQResult;
 import com.marklogic.xqrunner.XQRunner;
 import com.marklogic.xqrunner.XQVariable;
 import com.marklogic.xqrunner.XQVariableType;
 import com.marklogic.xqrunner.XQuery;
-import com.marklogic.xqrunner.XQDocumentWrapper;
-import com.marklogic.xqrunner.XQDocumentMetaData;
-import com.marklogic.xdmp.XDMPDocInsertStream;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.io.InputStream;
-import java.io.IOException;
 
 /**
  * XDBC implementation of a synchronous XQRunner.
