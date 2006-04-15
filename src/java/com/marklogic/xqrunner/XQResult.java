@@ -73,8 +73,8 @@ public interface XQResult
 	/**
 	 * @return The next item in the sequence.  An internal index is
 	 *  maintained.  For streaming results, this index may only move
-	 *  forward.  Fo buffered results, the index may be rewound with
-	 *  the rewindItems() method.
+	 *  forward.  For buffered results, the index may be rewound with
+	 *  the rewindItems() method.  (Returns null if no result at all?)
 	 * @see #rewindItems()
 	 * @throws XQException If there is a problem getting the next
 	 *  ResultItem.  This will only happen for streaming ResultItems.
