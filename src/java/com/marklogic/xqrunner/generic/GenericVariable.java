@@ -45,6 +45,14 @@ public class GenericVariable implements XQVariable
 		this.type = type;
 		this.value = value;
 
+		// Special handling if the value type is Integer or Long make BigInt
+		if (value instanceof Integer) {
+			value = BigInteger.valueOf(((Integer)value).intValue());
+		}
+		else if (value instanceof Long) {
+			value = BigInteger.valueOf(((Long)value).longValue());
+		}
+
 		if (this.namespace.length() == 0) {
 			hashCode = localname.hashCode();
 		} else {
