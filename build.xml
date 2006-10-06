@@ -23,7 +23,7 @@
 <project name="xqrunner" default="all" basedir=".">
 
 	<property name="product.name" value="xqrunner"/>
-	<property name="release.version" value="0.7.2"/>
+	<property name="release.version" value="0.8.0"/>
 
 	<!-- Static definitions of where things are relative to the root -->
 	<property name="src.root" value="src"/>
@@ -40,6 +40,7 @@
 	<!-- Jar files that are under source control in this tree -->
 	<property name="jarlib" value="src/lib"/>
 	<property name="junit.jar" value="${jarlib}/junit.jar"/>
+	<property name="xcc.jar" value="${jarlib}/xcc.jar"/>
 	<property name="xdbc.jar" value="${jarlib}/xdbc.jar"/>
 	<property name="xdmp.jar" value="${jarlib}/xdmp.jar"/>
 	<property name="jdom.jar" value="${jarlib}/jdom.jar"/>
@@ -79,6 +80,7 @@
 	<!-- ********************************************************** -->
 
 	<path id="code.compile.classpath">
+		<pathelement path="${xcc.jar}"/>
 		<pathelement path="${xdbc.jar}"/>
 		<pathelement path="${xdmp.jar}"/>
 		<pathelement path="${jdom.jar}"/>
@@ -87,6 +89,7 @@
 
 	<path id="testcases.classpath">
 		<pathelement path="${junit.jar}"/>
+		<pathelement path="${xcc.jar}"/>
 		<pathelement path="${xdbc.jar}"/>
 		<pathelement path="${xdmp.jar}"/>
 		<pathelement path="${jdom.jar}"/>
@@ -155,8 +158,6 @@
 			</fileset>
 			<fileset file="${code.output.jar}" />
 			<fileset dir="${jarlib}">
-				<include name="xdbc.jar"/>
-				<include name="xdmp.jar"/>
 				<include name="jdom.jar"/>
 			</fileset>
 			<fileset file="${javadoc.zipfile}" />

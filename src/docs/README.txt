@@ -9,16 +9,25 @@ build are placed in the "deliverable" directory.  The
 directory named "buildtmp" is temporary stuff that can
 be deleted after the build.
 
-   The binary bundle contains pre-built jar files (the
-content of the deliverable directory) which you can use
-without doing a build.
+   The binary bundle contains a pre-built XQRunner jar
+file which you can use without doing a build.  It also
+includes jdom.jar.  The jar(s) for XCC or XDBC are not
+included in the binary bundle.  Please download the latest
+version of XCC (preferred) or XDBC (if you must) from
+http://developer.marklogic.com/download/
 
    The Javadoc API documentation is included in the
 binary distribution zip file as xqrunner-api.zip.
 
+Version 0.8.0 (9/05/2006)
+	Add an XCC back-end provider (new default)
+	Auto-detect XDBC or XCC if only is in the classpath
+	As-of this version, XDBC/XCC jars are no longer
+	bundled with XQRunner.
+
 Version 0.7.2 (7/15/2005)
 	Return BigInteger instance rather than Integer for xs:integer
-	Updated junit tests 
+	Updated junit tests
 
 Version 0.7.1 (6/22/2005)
 	Update bundled xdbc jars to 2.2-8, which
