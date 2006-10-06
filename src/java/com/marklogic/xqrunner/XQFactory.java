@@ -20,9 +20,10 @@ package com.marklogic.xqrunner;
 
 import com.marklogic.xqrunner.spi.XQProvider;
 
-import java.util.Map;
-import java.util.HashMap;
 import java.net.URI;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * <p>Use this class to obtain instances of XQDataSource.
@@ -48,35 +49,76 @@ public class XQFactory
 {
 	public static final String PROPERTY_PREFIX = "xqrunner.provider.";
 
+	public static final String XCC_PROVIDER_NAME = "xcc";
+	public static final String XCC_PROVIDER_CLASS =
+		"com.marklogic.xqrunner.xcc.XccProvider";
+
 	public static final String XDBC_PROVIDER_NAME = "xdbc";
 	public static final String XDBC_PROVIDER_CLASS =
 		"com.marklogic.xqrunner.xdbc.XdbcProvider";
 
-	public static final String DEFAULT_PROVIDER_NAME = XDBC_PROVIDER_NAME;
-	public static final String DEFAULT_PROVIDER_CLASS = XDBC_PROVIDER_CLASS;
+	public static final String DEFAULT_PROVIDER_NAME = XCC_PROVIDER_NAME;
+	public static final String DEFAULT_PROVIDER_CLASS = XCC_PROVIDER_CLASS;
 
-	private static Map defaultProviders = null;
+	private static final Map knownProvidersMap;
 
 	private XQProvider provider = null;
 
 	// -----------------------------------------------------------------
 
 	/**
-	 * Construct a factory using the default provider.
+	 * <p>
+	 * Construct a factory by searching the list of default providers.
+	 * This method first attempts to load the class the class named by
+	 * the system propery "com.marklogic.xqrunner.spi.XQProvider".  If
+	 * that class if not found, then the list of known providers is tried
+	 * until one is successfully loaded.
+	 * </p>
+	 * <p>
+	 * In practice, this means that you can place either the XCC jar or
+	 * the XDBC jars in the classpath and XQRunner will use whichever
+	 * on it finds first.  Currently, XCC will take precedence over XDBC.
+	 * </p>
 	 *
-	 * @throws XQException Thrown if the default XQProvider implementation
+	 * @throws XQException Thrown if the an XQProvider implementation
 	 *  cannot be instantiated.
 	 */
-	public XQFactory()
-		throws XQException
+	public XQFactory() throws XQException
 	{
 		String className = System.getProperty (XQProvider.class.getName());
 
-		if (className == null) {
-			className = DEFAULT_PROVIDER_CLASS;
+		if (className != null) {
+			try {
+				provider = loadProvider (className);
+				return;
+			} catch (XQException e) {
+				// didn't find it, carry on
+			}
 		}
 
-		provider = loadProvider (className);
+		XQException ex = null;
+
+		// Go with the first loadable provider class we find
+		for (Iterator it = knownProvidersMap.keySet().iterator(); it.hasNext();) {
+			String providerName = (String) it.next();
+
+			// undocumented means to change class names for defined providers
+			className = System.getProperty (PROPERTY_PREFIX + providerName);
+
+			if (className == null) {
+				className = (String) knownProvidersMap.get (providerName);
+			}
+
+			try {
+				provider = loadProvider (className);
+
+				return;
+			} catch (XQException e) {
+				ex = e;
+			}
+		}
+
+		throw ex;
 	}
 
 	/**
@@ -92,7 +134,7 @@ public class XQFactory
 		String className = System.getProperty (PROPERTY_PREFIX + providerName);
 
 		if (className == null) {
-			className = (String) defaultProviders.get (providerName);
+			className = (String) knownProvidersMap.get (providerName);
 		}
 
 		if (className == null) {
@@ -181,8 +223,10 @@ public class XQFactory
 	}
 
 	static {
-		defaultProviders = new HashMap();
+		knownProvidersMap = new LinkedHashMap ();
 
-		defaultProviders.put (XDBC_PROVIDER_NAME, XDBC_PROVIDER_CLASS);
+		// provider classes will be tried in this order
+		knownProvidersMap.put (XCC_PROVIDER_NAME, XCC_PROVIDER_CLASS);
+		knownProvidersMap.put (XDBC_PROVIDER_NAME, XDBC_PROVIDER_CLASS);
 	}
 }

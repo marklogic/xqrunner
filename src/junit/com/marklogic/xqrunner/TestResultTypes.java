@@ -58,7 +58,8 @@ public class TestResultTypes extends TestCase
 			"getText(<foo>bar</foo>)"));
 		XQResultItem item = result.getItem (0);
 
-		assertFalse (item.isNode());
+		// XCC says yes for text(), XDBC says no (XCC is right)
+//		assertFalse (item.isNode());
 		assertSame (XQVariableType.TEXT, item.getType());
 		assertEquals ("bar", item.asString());
 	}
@@ -311,7 +312,8 @@ public class TestResultTypes extends TestCase
 		XQResultItem item = result.getItem (0);
 
 		assertFalse (item.isStreaming());
-		assertFalse (item.isNode());
+		// XCC says yes for binary(), XDBC says no (XCC is right)
+//		assertFalse (item.isNode());
 		assertSame (XQVariableType.BINARY, item.getType());
 		assertEquals ("foo", new String (item.asBytes()));
 		assertFalse (item.isStreaming());
@@ -324,10 +326,12 @@ public class TestResultTypes extends TestCase
 		XQResultItem item = result.getItem (0);
 
 		assertTrue (item.isStreaming());
-		assertFalse (item.isNode());
+		// XCC says yes for binary(), XDBC says no (XCC is right)
+//		assertFalse (item.isNode());
 		assertSame (XQVariableType.BINARY, item.getType());
 		assertEquals ("foo", new String (item.asBytes()));
-		assertFalse (item.isStreaming());
+		// XCC auto-buffers streaming items, the above item buffers this binary node. 
+//		assertFalse (item.isStreaming());
 		assertEquals ("foo", item.asString());
 	}
 

@@ -141,7 +141,7 @@ public class TestVars extends TestCase
 		query.setVariable (dataSource.newVariable ("extvar", XQVariableType.XS_FLOAT, 837.49));
 
 		XQResult result = runner.runQuery (query);
-		assertEquals ("var: 837.49", result.asString ());
+		assertEquals ("var: 837.49", result.asString());
 	}
 
 	public void testDoubleBigDecimal() throws XQException
@@ -150,7 +150,7 @@ public class TestVars extends TestCase
 			"define variable $extvar external\n" +
 			"concat (\"var: \", xs:string($extvar))");
 
-		query.setVariable (dataSource.newVariable ("extvar", XQVariableType.XS_DOUBLE, new BigDecimal (837.49)));
+		query.setVariable (dataSource.newVariable ("extvar", XQVariableType.XS_DOUBLE, new BigDecimal ("837.49")));
 
 		XQResult result = runner.runQuery (query);
 		assertEquals ("var: 837.49", result.asString ());
