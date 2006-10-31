@@ -19,7 +19,10 @@ http://developer.marklogic.com/download/
    The Javadoc API documentation is included in the
 binary distribution zip file as xqrunner-api.zip.
 
-Version 0.8.0 (9/05/2006)
+Version 0.8.1 (10/30/2006)
+	Explicitly build for JDK 1.4 target
+
+Version 0.8.0 (10/29/2006)
 	Add an XCC back-end provider (new default)
 	Auto-detect XDBC or XCC if only is in the classpath
 	As-of this version, XDBC/XCC jars are no longer

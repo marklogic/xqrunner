@@ -23,7 +23,7 @@
 <project name="xqrunner" default="all" basedir=".">
 
 	<property name="product.name" value="xqrunner"/>
-	<property name="release.version" value="0.8.0"/>
+	<property name="release.version" value="0.8.1"/>
 
 	<!-- Static definitions of where things are relative to the root -->
 	<property name="src.root" value="src"/>
@@ -103,13 +103,13 @@
 	<target name="compile.code" depends="init">
 		<javac classpathref="code.compile.classpath" srcdir="${java.source}"
 			destdir="${compiled.classes.dir}" deprecation="on"
-			debug="${compile.debug.symbols.flag}" />
+			debug="${compile.debug.symbols.flag}" source="1.4" target="1.4"/>
 	</target>
 
 	<target name="compile.tests" depends="compile.code">
 		<javac classpathref="testcases.classpath" srcdir="${junit.source}"
 			destdir="${compiled.classes.dir}" deprecation="on"
-			debug="${compile.debug.symbols.flag}" />
+			debug="${compile.debug.symbols.flag}" source="1.4" target="1.4"/>
 	</target>
 
 	<target name="test.code" depends="compile.tests" unless="junit.disabled" >
